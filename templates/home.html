@@ -1,0 +1,195 @@
+{% extends 'base.html' %}
+
+{% block title %}PawPass - Welcome{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="hero-content">
+        <h1 class="hero-title">Find a furry friend who needs your care</h1>
+        <p class="hero-subtitle">Open your heart and home to a friend for life.</p>
+        <div class="hero-buttons">
+            <a href="{{ url_for('pet_center') }}" class="btn btn-primary btn-lg">
+                <i class="fas fa-paw"></i> Browse Pets
+            </a>
+            <a href="{{ url_for('add_pet') }}" class="btn btn-outline btn-lg">
+                <i class="fas fa-plus"></i> Add New Pet
+            </a>
+        </div>
+    </div>
+    <div class="hero-image-container">
+        <!-- This can be a photo of a dog similar to the one in the reference image -->
+        <img src="{{ url_for('static', filename='images/hero-dog.jpg') }}" alt="Happy dog" class="hero-image">
+    </div>
+</div>
+
+<div class="features-section">
+    <div class="feature-card">
+        <div class="feature-icon">
+            <i class="fas fa-exchange-alt"></i>
+        </div>
+        <h3>Easy Handoffs</h3>
+        <p>Seamlessly transfer pet care information between volunteers and foster families.</p>
+    </div>
+    
+    <div class="feature-card">
+        <div class="feature-icon">
+            <i class="fas fa-clipboard-list"></i>
+        </div>
+        <h3>Care Checklists</h3>
+        <p>Keep track of feeding, medication, and care routines for each pet.</p>
+    </div>
+    
+    <div class="feature-card">
+        <div class="feature-icon">
+            <i class="fas fa-mobile-alt"></i>
+        </div>
+        <h3>Works Offline</h3>
+        <p>Access important pet information even without an internet connection.</p>
+    </div>
+</div>
+
+<div class="cta-section">
+    <h2>Ready to help a pet in need?</h2>
+    <p>Join our community of volunteers and foster families making a difference.</p>
+    <a href="{{ url_for('pet_center') }}" class="btn btn-primary btn-lg">
+        Start Now
+    </a>
+</div>
+{% endblock %}
+
+{% block head_extra %}
+<style>
+    /* Hero Section */
+    .hero-section {
+        display: flex;
+        flex-direction: column;
+        padding: 40px 0;
+        background-color: var(--background-color);
+        margin-bottom: 40px;
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .hero-content {
+        flex: 1;
+        padding: 20px;
+        z-index: 2;
+    }
+    
+    .hero-title {
+        font-size: 2.5rem;
+        margin-bottom: 20px;
+        color: var(--primary-color);
+        font-weight: 700;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.2rem;
+        margin-bottom: 30px;
+        color: var(--text-color);
+    }
+    
+    .hero-buttons {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+    
+    .btn-lg {
+        padding: 12px 24px;
+        font-size: 1.1rem;
+    }
+    
+    .hero-image-container {
+        margin-top: 30px;
+        height: 300px;
+        overflow: hidden;
+        border-radius: var(--border-radius);
+    }
+    
+    .hero-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+    }
+    
+    /* Features Section */
+    .features-section {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 30px;
+        margin-bottom: 60px;
+    }
+    
+    .feature-card {
+        background: white;
+        padding: 30px;
+        border-radius: var(--border-radius);
+        box-shadow: var(--card-shadow);
+        text-align: center;
+        transition: transform 0.3s;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .feature-icon {
+        font-size: 2rem;
+        color: var(--primary-color);
+        margin-bottom: 20px;
+    }
+    
+    .feature-card h3 {
+        margin-bottom: 15px;
+    }
+    
+    /* CTA Section */
+    .cta-section {
+        text-align: center;
+        background-color: rgba(244, 178, 186, 0.1);
+        padding: 60px 30px;
+        border-radius: var(--border-radius);
+        margin-bottom: 40px;
+    }
+    
+    .cta-section h2 {
+        margin-bottom: 15px;
+        font-size: 2rem;
+    }
+    
+    .cta-section p {
+        margin-bottom: 30px;
+        font-size: 1.2rem;
+    }
+    
+    body.colorblind-mode .cta-section {
+        background-color: rgba(0, 158, 115, 0.1);
+    }
+    
+    /* Responsive Adjustments */
+    @media (min-width: 768px) {
+        .hero-section {
+            flex-direction: row;
+            align-items: center;
+            padding: 0;
+        }
+        
+        .hero-content {
+            padding: 60px;
+        }
+        
+        .hero-image-container {
+            margin-top: 0;
+            flex: 1;
+            height: 500px;
+        }
+        
+        .hero-title {
+            font-size: 3rem;
+        }
+    }
+</style>
+{% endblock %}

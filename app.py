@@ -205,8 +205,13 @@ with app.app_context():
 
 # Routes
 @app.route('/')
-def index():
-    """Home page - displays list of all pets"""
+def home():
+    """Homepage with welcome message and features"""
+    return render_template('home.html')
+
+@app.route('/pets')
+def pet_center():
+    """Pet Care Center - displays list of all pets"""
     search_query = request.args.get('search', '').strip()
     
     with app.app_context():
@@ -218,6 +223,12 @@ def index():
             pets = Pet.query.all()
     
     return render_template('index.html', pets=pets)
+
+# Legacy route for backward compatibility
+@app.route('/index')
+def index():
+    """Redirect to pet_center for backward compatibility"""
+    return redirect(url_for('pet_center'))
 
 @app.route('/pet/<int:pet_id>')
 def pet_profile(pet_id):

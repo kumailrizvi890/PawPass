@@ -656,6 +656,11 @@ textarea {
   width: 100%;
   max-width: 500px;
   margin: 0 auto;
+  padding-bottom: 20px;
+  background-color: rgba(0, 0, 0, 0.02);
+  padding: 20px;
+  border-radius: var(--border-radius);
+  margin-bottom: 30px;
 }
 
 .search-input-container {
@@ -666,11 +671,13 @@ textarea {
 
 .search-input {
   width: 100%;
-  padding: 10px 45px 10px 15px;
+  padding: 14px 45px 14px 15px;
   border: 1px solid var(--light-gray);
   border-radius: var(--border-radius);
   font-family: 'Poppins', sans-serif;
   font-size: 1rem;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .search-button {
