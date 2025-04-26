@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EMERGENCY: Pet Requires Immediate Attention</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+        .emergency-banner {
+            background-color: #d9534f;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+            border-radius: 5px 5px 0 0;
+        }
+        .logo {
+            max-width: 150px;
+            margin-bottom: 10px;
+        }
+        .content {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 0 0 5px 5px;
+            border: 2px solid #d9534f;
+        }
+        .pet-info {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            border-left: 4px solid #d9534f;
+        }
+        .button {
+            display: inline-block;
+            background-color: #d9534f;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="emergency-banner">
+        ⚠️ EMERGENCY ALERT ⚠️
+    </div>
+    
+    <div class="content">
+        <p><strong>Attention {{volunteer_name}},</strong></p>
+        
+        <p>This is an <strong>EMERGENCY</strong> notification about a pet that requires immediate attention.</p>
+        
+        <div class="pet-info">
+            <h2>{{pet_name}}</h2>
+            <p><strong>Species:</strong> {{pet_species}}</p>
+            <p><strong>Current Location:</strong> {{pet_location}}</p>
+            <p><strong>Emergency Details:</strong> {{emergency_details}}</p>
+            <p><strong>Flagged by:</strong> {{flagged_by}}</p>
+            <p><strong>Time:</strong> {{emergency_time}}</p>
+        </div>
+        
+        <p>Please respond as soon as possible. This pet has been marked as requiring urgent care.</p>
+        
+        <a href="https://{{domain}}/pet/{{pet_id}}" class="button">View Pet Details</a>
+    </div>
+    
+    <div class="footer">
+        <p>This is an automated emergency alert from PawPass. Please do not reply to this email.</p>
+        <p>If you have questions or need assistance, please contact the shelter coordinator.</p>
+    </div>
+</body>
+</html>
