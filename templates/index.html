@@ -14,13 +14,11 @@
     
     <div class="search-container mb-4">
         <form action="{{ url_for('index') }}" method="GET" class="search-form">
-            <div class="input-group">
-                <input type="text" name="search" class="form-control" placeholder="Search pets by name..." value="{{ request.args.get('search', '') }}">
-                <div class="input-group-append">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-search"></i>
-                    </button>
-                </div>
+            <div class="search-input-container">
+                <input type="text" name="search" class="search-input" placeholder="Search pets by name..." value="{{ request.args.get('search', '') }}">
+                <button type="submit" class="search-button">
+                    <i class="fas fa-search"></i>
+                </button>
             </div>
         </form>
     </div>

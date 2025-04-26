@@ -102,7 +102,7 @@ nav {
   align-items: center;
 }
 
-nav button {
+nav button, .nav-button {
   background-color: transparent;
   border: none;
   color: white;
@@ -112,6 +112,11 @@ nav button {
   font-size: 0.9rem;
   display: flex;
   align-items: center;
+  text-decoration: none;
+}
+
+.nav-button:hover {
+  color: rgba(255, 255, 255, 0.8);
 }
 
 #install-button {
@@ -128,7 +133,7 @@ nav button {
   transform: translateY(-2px);
 }
 
-nav button svg {
+nav button svg, .nav-button i {
   margin-right: var(--spacing-sm);
 }
 
@@ -199,12 +204,28 @@ p {
   height: 180px;
   overflow: hidden;
   border-radius: var(--border-radius) var(--border-radius) 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--light-gray);
 }
 
 .pet-card-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.placeholder-image {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4rem;
+  font-weight: bold;
+  color: white;
+  background-color: var(--primary-color);
 }
 
 .pet-card-content {
@@ -230,12 +251,28 @@ p {
   overflow: hidden;
   border-radius: var(--border-radius);
   margin-bottom: var(--spacing-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--light-gray);
 }
 
 .pet-profile-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.pet-profile-image .placeholder-image {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 6rem;
+  font-weight: bold;
+  color: white;
+  background-color: var(--primary-color);
 }
 
 .pet-info-section {
@@ -510,6 +547,69 @@ textarea {
   .footer-logo, .footer-info {
     margin-bottom: 0;
   }
+}
+
+/* Search bar styling */
+.search-container {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.search-input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-input {
+  width: 100%;
+  padding: 10px 45px 10px 15px;
+  border: 1px solid var(--light-gray);
+  border-radius: var(--border-radius);
+  font-family: 'Poppins', sans-serif;
+  font-size: 1rem;
+}
+
+.search-button {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  border: none;
+  background-color: transparent;
+  color: var(--primary-color);
+  font-size: 1.2rem;
+  padding: 0 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.search-button:hover {
+  color: var(--primary-color-dark);
+}
+
+/* Emergency badge */
+.emergency-badge {
+  background-color: var(--danger-color);
+  color: white;
+  padding: 5px 10px;
+  border-radius: var(--border-radius);
+  display: inline-block;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-top: var(--spacing-sm);
+}
+
+/* Volunteer badge */
+.volunteer-badge {
+  margin-top: var(--spacing-sm);
+  font-size: 0.85rem;
+  font-style: italic;
+  color: var(--accent-color);
 }
 
 /* Button for deleting pets */
