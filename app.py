@@ -190,8 +190,8 @@ def save_pet_image(file):
             except Exception as e:
                 logging.error(f"Error creating thumbnail: {e}")
             
-            # Return the relative path for storage in the database (without 'static/' prefix)
-            relative_path = f"uploads/{unique_filename}"
+            # Return the relative path for storage in the database WITH leading slash
+            relative_path = f"/uploads/{unique_filename}"
             logging.info(f"Returning image path: {relative_path}")
             return relative_path
         except Exception as e:
@@ -299,7 +299,7 @@ def edit_pet(pet_id):
                     
                     # Set image URL for the database
                     if relative_path:
-                        image_url = f"/{relative_path}"
+                        image_url = relative_path
                         logging.info(f"New image URL for {pet_name}: {image_url}")
             
             try:
@@ -450,7 +450,7 @@ def add_pet():
                 
                 # Set image URL for the database
                 if relative_path:
-                    image_url = f"/{relative_path}"
+                    image_url = relative_path
                     logging.info(f"Image URL to save in database: {image_url}")
         
         # Create and save the new pet
