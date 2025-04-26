@@ -1,0 +1,400 @@
+{% extends 'base.html' %}
+
+{% block title %}PawPass - Welcome{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="hero-content">
+        <h1 class="hero-title">Find a furry friend who needs your care</h1>
+        <p class="hero-subtitle">Open your heart and home to a friend for life.</p>
+        <div class="hero-buttons">
+            <a href="{{ url_for('pet_center') }}" class="btn btn-primary btn-lg">
+                <i class="fas fa-paw"></i> Browse Pets
+            </a>
+            <a href="{{ url_for('add_pet') }}" class="btn btn-outline btn-lg">
+                <i class="fas fa-plus"></i> Add New Pet
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="spline-animation-section">
+    <h3>
+        <i class="fas fa-heart" style="margin-right: 8px; color: var(--primary-color);"></i>
+        The Heart of Pet Care
+        <i class="fas fa-heart" style="margin-left: 8px; color: var(--primary-color);"></i>
+    </h3>
+    <p class="animation-subtitle">Every pet deserves compassionate care and a loving home</p>
+    <div class="spline-container">
+        <div id="heart-animation-container"></div>
+        <div class="animation-fallback">
+            <video id="heart-video" autoplay loop muted playsinline>
+                <source src="{{ url_for('static', filename='videos/heart-with-burst-lines.mp4') }}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+    </div>
+</div>
+
+<div class="features-section">
+    <div class="feature-card">
+        <div class="feature-icon">
+            <i class="fas fa-exchange-alt"></i>
+        </div>
+        <h3>Easy Handoffs</h3>
+        <p>Seamlessly transfer pet care information between volunteers and foster families.</p>
+    </div>
+    
+    <div class="feature-card">
+        <div class="feature-icon">
+            <i class="fas fa-clipboard-list"></i>
+        </div>
+        <h3>Care Checklists</h3>
+        <p>Keep track of feeding, medication, and care routines for each pet.</p>
+    </div>
+    
+    <div class="feature-card">
+        <div class="feature-icon">
+            <i class="fas fa-mobile-alt"></i>
+        </div>
+        <h3>Works Offline</h3>
+        <p>Access important pet information even without an internet connection.</p>
+    </div>
+</div>
+
+<div class="cta-section">
+    <h2>Ready to help a pet in need?</h2>
+    <p>Join our community of volunteers and foster families making a difference.</p>
+    <a href="{{ url_for('pet_center') }}" class="btn btn-primary btn-lg">
+        Start Now
+    </a>
+</div>
+{% endblock %}
+
+{% block head_extra %}
+<style>
+    /* Hero Section */
+    .hero-section {
+        display: flex;
+        flex-direction: column;
+        padding: 80px 20px;
+        background-color: rgba(244, 178, 186, 0.1);
+        margin-bottom: 40px;
+        border-radius: var(--border-radius);
+        text-align: center;
+        position: relative;
+    }
+    
+    body.colorblind-mode .hero-section {
+        background-color: rgba(0, 158, 115, 0.1);
+    }
+    
+    .hero-content {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .hero-title {
+        font-size: 3.2rem;
+        margin-bottom: 20px;
+        color: var(--primary-color);
+        font-weight: 700;
+        line-height: 1.2;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.4rem;
+        margin-bottom: 40px;
+        color: var(--text-color);
+        line-height: 1.5;
+    }
+    
+    .hero-buttons {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .btn-lg {
+        padding: 14px 28px;
+        font-size: 1.2rem;
+        border-radius: 30px;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+    
+    .btn-lg:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Features Section */
+    .features-section {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 30px;
+        margin-bottom: 60px;
+    }
+    
+    .feature-card {
+        background: white;
+        padding: 30px;
+        border-radius: var(--border-radius);
+        box-shadow: var(--card-shadow);
+        text-align: center;
+        transition: transform 0.3s;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .feature-icon {
+        font-size: 2rem;
+        color: var(--primary-color);
+        margin-bottom: 20px;
+    }
+    
+    .feature-card h3 {
+        margin-bottom: 15px;
+    }
+    
+    /* CTA Section */
+    .cta-section {
+        text-align: center;
+        background-color: rgba(244, 178, 186, 0.1);
+        padding: 60px 30px;
+        border-radius: var(--border-radius);
+        margin-bottom: 40px;
+    }
+    
+    .cta-section h2 {
+        margin-bottom: 15px;
+        font-size: 2rem;
+    }
+    
+    .cta-section p {
+        margin-bottom: 30px;
+        font-size: 1.2rem;
+    }
+    
+    body.colorblind-mode .cta-section {
+        background-color: rgba(0, 158, 115, 0.1);
+    }
+    
+    /* Spline Animation Section */
+    .spline-animation-section {
+        margin: 20px auto 60px;
+        text-align: center;
+        padding: 30px 20px;
+        max-width: 1000px;
+        background: linear-gradient(to bottom, rgba(244, 178, 186, 0.05), rgba(244, 178, 186, 0.15));
+        border-radius: var(--border-radius);
+    }
+    
+    body.colorblind-mode .spline-animation-section {
+        background: linear-gradient(to bottom, rgba(0, 158, 115, 0.05), rgba(0, 158, 115, 0.15));
+    }
+    
+    .spline-animation-section h3 {
+        margin-bottom: 20px;
+        font-size: 1.8rem;
+        color: var(--primary-color);
+    }
+    
+    body.colorblind-mode .spline-animation-section h3 {
+        color: var(--colorblind-primary);
+    }
+    
+    body.colorblind-mode .spline-animation-section h3 i {
+        color: var(--colorblind-primary);
+    }
+    
+    .animation-subtitle {
+        font-size: 1.2rem;
+        margin-bottom: 25px;
+        color: var(--text-color);
+        font-style: italic;
+        opacity: 0.8;
+    }
+    
+    .spline-container {
+        height: 500px;
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        box-shadow: var(--card-shadow);
+        background-color: rgba(255, 255, 255, 0.9);
+        border: 1px solid rgba(244, 178, 186, 0.3);
+        transition: all 0.3s ease;
+    }
+    
+    .spline-container:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    body.colorblind-mode .spline-container {
+        border: 1px solid rgba(0, 158, 115, 0.3);
+    }
+    
+    #heart-animation {
+        width: 100%;
+        height: 100%;
+        display: block;
+    }
+    
+    #heart-video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+    
+    #heart-animation-container {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 2;
+    }
+    
+    #heart-animation-container canvas {
+        width: 100% !important;
+        height: 100% !important;
+        display: block;
+    }
+    
+    .animation-fallback {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+    }
+    
+    .loading-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: var(--primary-color);
+        font-size: 1.5rem;
+        text-align: center;
+        background: rgba(255, 255, 255, 0.8);
+        padding: 15px 30px;
+        border-radius: 30px;
+        z-index: 3;
+    }
+    
+    body.colorblind-mode .loading-text {
+        color: var(--colorblind-primary);
+    }
+    
+    .video-play-button {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(255, 255, 255, 0.8);
+        border: none;
+        border-radius: 50%;
+        width: 80px;
+        height: 80px;
+        cursor: pointer;
+        font-size: 30px;
+        color: var(--primary-color);
+        transition: all 0.3s;
+        box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+        z-index: 10;
+    }
+    
+    body.colorblind-mode .video-play-button {
+        color: var(--colorblind-primary);
+    }
+    
+    .video-play-button:hover {
+        background: white;
+        transform: translate(-50%, -50%) scale(1.1);
+    }
+    
+    .spline-container {
+        position: relative;
+    }
+    
+    /* Responsive Adjustments */
+    @media (min-width: 768px) {
+        .hero-section {
+            padding: 100px 40px;
+        }
+        
+        .hero-title {
+            font-size: 4rem;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.6rem;
+        }
+        
+        .spline-container {
+            height: 600px;
+        }
+    }
+    
+    @media (max-width: 767px) {
+        .spline-container {
+            height: 400px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script type="module" src="{{ url_for('static', filename='js/three-heart.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Try to play the fallback video
+    const heartVideo = document.getElementById('heart-video');
+    if (heartVideo) {
+        heartVideo.play().catch(function(error) {
+            console.log('Auto-play was prevented:', error);
+            // Add a play button if autoplay fails
+            const container = heartVideo.parentElement;
+            const playButton = document.createElement('button');
+            playButton.innerHTML = '<i class="fas fa-play"></i>';
+            playButton.className = 'video-play-button';
+            playButton.onclick = function() {
+                heartVideo.play();
+                this.style.display = 'none';
+            };
+            container.appendChild(playButton);
+        });
+    }
+    
+    // Check for WebGL support
+    const canvas = document.createElement('canvas');
+    const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+    
+    if (!gl) {
+        // WebGL not supported, show the fallback video
+        const fallback = document.querySelector('.animation-fallback');
+        if (fallback) {
+            fallback.style.zIndex = '3';
+        }
+        console.log('WebGL not supported, using fallback video');
+    } else {
+        // Fallback video shouldn't be visible unless there's an error with WebGL
+        setTimeout(() => {
+            const threeContainer = document.getElementById('heart-animation-container');
+            if (threeContainer && threeContainer.querySelector('canvas')) {
+                const fallback = document.querySelector('.animation-fallback');
+                if (fallback) {
+                    fallback.style.display = 'none';
+                }
+            }
+        }, 3000); // Give THREE.js some time to initialize
+    }
+});
+</script>
+{% endblock %}

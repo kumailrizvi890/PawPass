@@ -25,7 +25,16 @@
                 <span class="logo-text">PawPass</span>
             </a></h1>
             <nav>
-                <button id="color-blind-toggle" onclick="toggleColorBlindMode()">
+                <a href="{{ url_for('home') }}" class="nav-button">
+                    <i class="fas fa-home"></i> Home
+                </a>
+                <a href="{{ url_for('pet_center') }}" class="nav-button">
+                    <i class="fas fa-paw"></i> Pet Care Center
+                </a>
+                <a href="{{ url_for('add_pet') }}" class="nav-button">
+                    <i class="fas fa-plus"></i> Add New Pet
+                </a>
+                <button id="color-blind-toggle">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="12" cy="12" r="5"></circle>
                         <line x1="12" y1="1" x2="12" y2="3"></line>
@@ -85,7 +94,8 @@
                     <p>Making pet care handoffs between shelter volunteers seamless</p>
                 </div>
                 <div class="footer-links">
-                    <a href="{{ url_for('index') }}">Home</a>
+                    <a href="{{ url_for('home') }}">Home</a>
+                    <a href="{{ url_for('pet_center') }}">Pet Care Center</a>
                     <a href="{{ url_for('add_pet') }}">Add New Pet</a>
                 </div>
             </div>

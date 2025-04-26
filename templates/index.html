@@ -6,21 +6,16 @@
 <div class="page-header">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h2>Pet Care Center</h2>
-        <a href="{{ url_for('add_pet') }}" class="btn btn-primary">
-            <i class="fas fa-plus"></i> Add New Pet
-        </a>
     </div>
     <p>Select a pet to view profile, add updates, or complete shift checklists.</p>
     
     <div class="search-container mb-4">
-        <form action="{{ url_for('index') }}" method="GET" class="search-form">
-            <div class="input-group">
-                <input type="text" name="search" class="form-control" placeholder="Search pets by name..." value="{{ request.args.get('search', '') }}">
-                <div class="input-group-append">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-search"></i>
-                    </button>
-                </div>
+        <form action="{{ url_for('pet_center') }}" method="GET" class="search-form">
+            <div class="search-input-container">
+                <input type="text" name="search" class="search-input" placeholder="Search pets by name..." value="{{ request.args.get('search', '') }}">
+                <button type="submit" class="search-button">
+                    <i class="fas fa-search"></i>
+                </button>
             </div>
         </form>
     </div>
@@ -32,7 +27,11 @@
             <div class="card pet-card">
                 <div class="pet-card-image">
                     {% if pet.image_url %}
-                        <img src="{{ pet.image_url }}" alt="{{ pet.name }}">
+                        {% if pet.image_url.startswith('http') %}
+                            <img src="{{ pet.image_url }}" alt="{{ pet.name }}">
+                        {% else %}
+                            <img src="/static{{ pet.image_url }}" alt="{{ pet.name }}">
+                        {% endif %}
                     {% else %}
                         <div class="placeholder-image">{{ pet.name[0] }}</div>
                     {% endif %}
@@ -65,8 +64,16 @@
             <path d="M7 6a5 5 0 0 0 10 0"></path>
             <path d="M7 18a5 5 0 0 1 10 0"></path>
         </svg>
-        <h3>No Pets Available</h3>
-        <p>There are currently no pets in the system.</p>
+        {% if search_query %}
+            <h3>No Pets Found</h3>
+            <p>No pets found matching "{{ search_query }}". Try a different search term.</p>
+            <a href="{{ url_for('pet_center') }}" class="btn btn-primary mt-3">
+                <i class="fas fa-arrow-left"></i> Show All Pets
+            </a>
+        {% else %}
+            <h3>No Pets Available</h3>
+            <p>There are currently no pets in the system.</p>
+        {% endif %}
     </div>
 {% endif %}
 {% endblock %}
