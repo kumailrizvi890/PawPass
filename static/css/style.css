@@ -26,15 +26,47 @@
 
 /* Color-blind mode */
 body.colorblind-mode {
-  --background-color: #f0f4f8;
-  --primary-color: #004987; /* Dark Blue */
-  --primary-color-dark: #003d73;
-  --accent-color: #E69F00; /* Soft Orange */
-  --secondary-accent: #009E73; /* Bluish Green */
-  --tertiary-accent: #004987; /* Dark Blue */
+  --background-color: #f8f9fa;
+  --primary-color: #0049B7; /* Dark Blue RGB: 0, 73, 135 */
+  --primary-color-dark: #003073;
+  --accent-color: #E69F00; /* Soft Orange RGB: 230, 159, 0 */
+  --secondary-accent: #009E73; /* Bluish Green RGB: 0, 158, 115 */
+  --tertiary-accent: #CC79A7; /* Light Pinkish Purple RGB: 204, 121, 167 */
   --success-color: #009E73; /* Bluish Green */
   --warning-color: #E69F00; /* Soft Orange */
   --danger-color: #CC79A7; /* Light Pinkish Purple */
+  
+  /* Override buttons and backgrounds with colorblind-friendly colors */
+  background-color: #f8f9fa;
+}
+
+/* Additional color overrides for colorblind mode */
+body.colorblind-mode header {
+  background-color: #0049B7; /* Dark Blue */
+}
+
+body.colorblind-mode .site-footer {
+  background-color: #CC79A7; /* Light Pinkish Purple */
+}
+
+body.colorblind-mode .btn-primary {
+  background-color: #0049B7; /* Dark Blue */
+}
+
+body.colorblind-mode .btn-secondary {
+  background-color: #E69F00; /* Soft Orange */
+}
+
+body.colorblind-mode .btn-danger {
+  background-color: #CC79A7; /* Light Pinkish Purple */
+}
+
+body.colorblind-mode .emergency-badge {
+  background-color: #CC79A7; /* Light Pinkish Purple */
+}
+
+body.colorblind-mode .placeholder-image {
+  background-color: #0049B7; /* Dark Blue */
 }
 
 /* Base styles */
