@@ -26,7 +26,10 @@
     </h3>
     <p class="animation-subtitle">Every pet deserves compassionate care and a loving home</p>
     <div class="spline-container">
-        <iframe src='https://my.spline.design/heartwithburstlines-zDkeD0NjlM1lX9jnvrXigb0q/' frameborder='0' width='100%' height='100%'></iframe>
+        <video id="heart-video" autoplay loop muted playsinline>
+            <source src="{{ url_for('static', filename='videos/heart-with-burst-lines.mp4') }}" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
     </div>
 </div>
 
@@ -237,6 +240,44 @@
         display: block;
     }
     
+    #heart-video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+    
+    .video-play-button {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(255, 255, 255, 0.8);
+        border: none;
+        border-radius: 50%;
+        width: 80px;
+        height: 80px;
+        cursor: pointer;
+        font-size: 30px;
+        color: var(--primary-color);
+        transition: all 0.3s;
+        box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+        z-index: 10;
+    }
+    
+    body.colorblind-mode .video-play-button {
+        color: var(--colorblind-primary);
+    }
+    
+    .video-play-button:hover {
+        background: white;
+        transform: translate(-50%, -50%) scale(1.1);
+    }
+    
+    .spline-container {
+        position: relative;
+    }
+    
     /* Responsive Adjustments */
     @media (min-width: 768px) {
         .hero-section {
@@ -265,5 +306,25 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="{{ url_for('static', filename='js/spline.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Ensure the video plays
+    const heartVideo = document.getElementById('heart-video');
+    if (heartVideo) {
+        heartVideo.play().catch(function(error) {
+            console.log('Auto-play was prevented:', error);
+            // Add a play button if autoplay fails
+            const container = heartVideo.parentElement;
+            const playButton = document.createElement('button');
+            playButton.innerHTML = '<i class="fas fa-play"></i>';
+            playButton.className = 'video-play-button';
+            playButton.onclick = function() {
+                heartVideo.play();
+                this.style.display = 'none';
+            };
+            container.appendChild(playButton);
+        });
+    }
+});
+</script>
 {% endblock %}
