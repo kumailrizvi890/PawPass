@@ -10,7 +10,7 @@
     <p>Select a pet to view profile, add updates, or complete shift checklists.</p>
     
     <div class="search-container mb-4">
-        <form action="{{ url_for('index') }}" method="GET" class="search-form">
+        <form action="{{ url_for('pet_center') }}" method="GET" class="search-form">
             <div class="search-input-container">
                 <input type="text" name="search" class="search-input" placeholder="Search pets by name..." value="{{ request.args.get('search', '') }}">
                 <button type="submit" class="search-button">
