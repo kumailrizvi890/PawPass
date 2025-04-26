@@ -1,31 +1,42 @@
 """
 Authentication models for PawPass
 """
+import logging
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, Text
 from sqlalchemy.orm import relationship
 
-# This will be imported from the main application
-# For now, we're defining it here for reference
-# db = SQLAlchemy()
+# Setup logging
+logger = logging.getLogger(__name__)
 
-# This class will be integrated with the main models in the future
 class User:
     """User model for authentication"""
     
-    # Schema definition for reference
-    # id = Column(Integer, primary_key=True)
-    # username = Column(String(64), unique=True, nullable=False)
-    # email = Column(String(120), unique=True, nullable=False)
-    # password_hash = Column(String(256), nullable=False)
-    # first_name = Column(String(64), nullable=True)
-    # last_name = Column(String(64), nullable=True)
-    # role = Column(String(20), default='volunteer')
-    # is_active = Column(Boolean, default=True)
-    # created_at = Column(DateTime, default=datetime.utcnow)
-    # last_login = Column(DateTime, nullable=True)
+    def __init__(self, username, email, password=None, first_name=None, last_name=None, role='volunteer'):
+        """
+        Initialize a new user
+        
+        Args:
+            username: Username
+            email: Email address
+            password: Plain text password
+            first_name: First name
+            last_name: Last name
+            role: User role
+        """
+        self.username = username
+        self.email = email
+        self.first_name = first_name
+        self.last_name = last_name
+        self.role = role
+        self.is_active = True
+        self.created_at = datetime.utcnow()
+        self.last_login = None
+        
+        if password:
+            self.set_password(password)
     
     def set_password(self, password):
         """Set the user's password hash"""
@@ -33,6 +44,8 @@ class User:
     
     def check_password(self, password):
         """Check if the provided password matches the hash"""
+        if not self.password_hash:
+            return False
         return check_password_hash(self.password_hash, password)
     
     def is_admin(self):
@@ -46,7 +59,7 @@ class User:
     def update_last_login(self):
         """Update the last login timestamp"""
         self.last_login = datetime.utcnow()
-        
+    
     def to_dict(self):
         """Convert user to a dictionary (for serialization)"""
         return {
