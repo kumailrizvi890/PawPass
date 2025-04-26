@@ -18,6 +18,13 @@
     </div>
 </div>
 
+<div class="spline-animation-section">
+    <h3>Explore the PawPass Experience</h3>
+    <div class="spline-container">
+        <iframe src="https://my.spline.design/untitled-0728f787-2d27-4263-9a50-758a2827ba6f/embed" frameborder="0" width="100%" height="100%"></iframe>
+    </div>
+</div>
+
 <div class="features-section">
     <div class="feature-card">
         <div class="feature-icon">
@@ -164,6 +171,30 @@
         background-color: rgba(0, 158, 115, 0.1);
     }
     
+    /* Spline Animation Section */
+    .spline-animation-section {
+        margin-bottom: 60px;
+        text-align: center;
+        padding: 20px;
+    }
+    
+    .spline-animation-section h3 {
+        margin-bottom: 20px;
+        font-size: 1.8rem;
+        color: var(--primary-color);
+    }
+    
+    body.colorblind-mode .spline-animation-section h3 {
+        color: var(--colorblind-primary);
+    }
+    
+    .spline-container {
+        height: 500px;
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        box-shadow: var(--card-shadow);
+    }
+    
     /* Responsive Adjustments */
     @media (min-width: 768px) {
         .hero-section {
@@ -176,6 +207,16 @@
         
         .hero-subtitle {
             font-size: 1.6rem;
+        }
+        
+        .spline-container {
+            height: 600px;
+        }
+    }
+    
+    @media (max-width: 767px) {
+        .spline-container {
+            height: 400px;
         }
     }
 </style>
