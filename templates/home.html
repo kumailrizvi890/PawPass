@@ -17,8 +17,8 @@
         </div>
     </div>
     <div class="hero-image-container">
-        <!-- Spline 3D Animation -->
-        <iframe class="spline-animation" src="https://my.spline.design/untitled-0728f787-2d27-4263-9a50-758a2827ba6f/" frameborder="0" allowfullscreen></iframe>
+        <!-- Canvas for Spline 3D Animation -->
+        <div id="spline-container"></div>
     </div>
 </div>
 
@@ -109,12 +109,11 @@
         position: relative;
     }
     
-    .spline-animation {
+    #spline-container {
         width: 100%;
         height: 100%;
-        border: none;
-        border-radius: var(--border-radius);
         background-color: transparent;
+        border-radius: var(--border-radius);
     }
     
     /* Features Section */
@@ -194,4 +193,128 @@
         }
     }
 </style>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/spline.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Create a simple 3D scene as fallback since actual Spline embedding has limitations
+        const splineContainer = document.getElementById('spline-container');
+        
+        // Add cute dog animation - this is a simple fallback using emojis
+        function createAnimatedDog() {
+            const dogEmoji = document.createElement('div');
+            dogEmoji.className = 'animated-dog';
+            dogEmoji.innerHTML = '🐕';
+            dogEmoji.style.cssText = `
+                position: absolute;
+                font-size: 5rem;
+                animation: float 3s ease-in-out infinite;
+                left: ${Math.random() * 80}%;
+                top: ${Math.random() * 80}%;
+            `;
+            splineContainer.appendChild(dogEmoji);
+            
+            // Also add paw prints
+            for (let i = 0; i < 5; i++) {
+                const pawPrint = document.createElement('div');
+                pawPrint.className = 'paw-print';
+                pawPrint.innerHTML = '🐾';
+                pawPrint.style.cssText = `
+                    position: absolute;
+                    font-size: 2rem;
+                    opacity: 0.7;
+                    left: ${Math.random() * 90}%;
+                    top: ${Math.random() * 90}%;
+                    transform: rotate(${Math.random() * 360}deg);
+                `;
+                splineContainer.appendChild(pawPrint);
+            }
+        }
+        
+        // Add a cat too for diversity
+        function createAnimatedCat() {
+            const catEmoji = document.createElement('div');
+            catEmoji.className = 'animated-cat';
+            catEmoji.innerHTML = '🐈';
+            catEmoji.style.cssText = `
+                position: absolute;
+                font-size: 4.5rem;
+                animation: float 4s ease-in-out infinite;
+                animation-delay: 1s;
+                left: ${Math.random() * 80}%;
+                top: ${Math.random() * 80}%;
+            `;
+            splineContainer.appendChild(catEmoji);
+        }
+        
+        // Add background styling based on colorblind mode
+        const isColorblindMode = document.body.classList.contains('colorblind-mode');
+        splineContainer.style.backgroundColor = isColorblindMode 
+            ? 'rgba(0, 158, 115, 0.1)'  // Colorblind-friendly background
+            : 'rgba(244, 178, 186, 0.1)'; // Regular background
+            
+        // Listen for colorblind mode changes
+        const colorblindToggle = document.getElementById('color-blind-toggle');
+        if (colorblindToggle) {
+            colorblindToggle.addEventListener('click', function() {
+                setTimeout(() => {
+                    const isNowColorblind = document.body.classList.contains('colorblind-mode');
+                    splineContainer.style.backgroundColor = isNowColorblind
+                        ? 'rgba(0, 158, 115, 0.1)'
+                        : 'rgba(244, 178, 186, 0.1)';
+                }, 50);
+            });
+        }
+        
+        // Add floating animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes float {
+                0% { transform: translateY(0) rotate(0); }
+                50% { transform: translateY(-20px) rotate(5deg); }
+                100% { transform: translateY(0) rotate(0); }
+            }
+            .animated-dog, .animated-cat {
+                transition: all 0.3s ease;
+            }
+            #spline-container:hover .animated-dog,
+            #spline-container:hover .animated-cat {
+                transform: scale(1.1);
+            }
+            .paw-print {
+                animation: fadeInOut 5s ease-in-out infinite;
+            }
+            @keyframes fadeInOut {
+                0% { opacity: 0; }
+                50% { opacity: 0.7; }
+                100% { opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Create our animation elements
+        createAnimatedDog();
+        createAnimatedCat();
+        createAnimatedDog();
+        
+        // Add pet toys
+        const toys = ['🧶', '🦴', '🧸'];
+        toys.forEach(toy => {
+            const toyElem = document.createElement('div');
+            toyElem.className = 'pet-toy';
+            toyElem.innerHTML = toy;
+            toyElem.style.cssText = `
+                position: absolute;
+                font-size: 2.5rem;
+                left: ${Math.random() * 90}%;
+                top: ${Math.random() * 90}%;
+                transform: rotate(${Math.random() * 360}deg);
+                opacity: 0.8;
+            `;
+            splineContainer.appendChild(toyElem);
+        });
+    });
+</script>
 {% endblock %}
