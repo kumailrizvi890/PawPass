@@ -1,0 +1,214 @@
+PawPass – Hackathon Project Plan
+💡 What is PawPass?
+PawPass is a lightweight web platform designed to help volunteers at animal shelters or foster pet programs safely and clearly hand off daily pet care responsibilities. It replaces messy tools like Excel, text chains, and email threads with a clean, easy-to-use interface for shift updates.
+
+🎯 Goal
+Make it easy for animal caretakers to log daily updates, complete checklists, and communicate across shifts, so no care tasks are missed and every animal stays healthy and happy.
+
+🌐 Website Structure
+
+Page	Purpose
+index.html	Homepage. Displays a list of all pets with photos and key info.
+pet.html	Shows full profile of a pet: feeding, medical notes, behavior, and past updates.
+update.html	Allows volunteers to add new daily notes or care updates for a pet.
+checklist.html	Volunteers complete a short checklist (fed, meds, water, playtime) at the end of each shift.
+🔘 Buttons and Features on Each Page
+✅ index.html – Pet List
+List of pets (card/grid view)
+
+[View Profile] button → goes to pet.html?id=123
+
+✅ pet.html – Pet Profile
+Shows:
+
+Name, photo
+
+Feeding instructions
+
+Medical notes
+
+Behavior notes
+
+List of past updates
+
+Buttons:
+
+[Add Update] → goes to update.html?id=123
+
+[Complete Checklist] → goes to checklist.html?id=123
+
+[Back to Pet List]
+
+✅ update.html – Add Update
+Textarea for new update
+
+Submit button: [Submit Update] → sends POST to backend
+
+[Back] button
+
+✅ checklist.html – Shift Checklist
+Checkboxes:
+
+ Fed?
+
+ Meds given?
+
+ Water?
+
+ Playtime?
+
+[Submit Checklist] button
+
+[Back to Profile]
+
+🔧 Backend (Python + Flask)
+You are using Flask to build your API.
+
+
+Endpoint	Method	Description
+/pets	GET	Returns list of all pets
+/pets/<id>	GET	Returns one pet’s full profile
+/pets/<id>/update	POST	Adds a new update to a pet
+/pets/<id>/checklist	POST	Logs shift checklist result
+Pet data stored in a Python object or JSON file (for now)
+
+No database needed for MVP
+
+Hosted locally on localhost:5000, connect via fetch() from frontend
+
+🎨 Design Style
+Layout: Mobile-first, clean vertical flow (good for tablets at shelters)
+
+Fonts: Poppins, Inter, or Open Sans
+
+Padding: At least 16px spacing between buttons and inputs
+
+Colors:
+
+Background: #F8F9FA
+
+Primary button: #0072B2
+
+Accent: #E69F00, #009E73, or #F0E442
+
+Text: #000000 or #1C1C1C
+
+♿ Accessibility: Color-Blind Mode
+PawPass includes an optional Color-Blind Mode for visual accessibility.
+
+Toggle Button:
+html
+Copy
+Edit
+<button onclick="toggleColorBlindMode()">🌈 Toggle Color-Blind Mode</button>
+JavaScript:
+javascript
+Copy
+Edit
+let colorBlind = false;
+function toggleColorBlindMode() {
+  const link = document.querySelector("link[rel=stylesheet]");
+  link.href = colorBlind ? "style.css" : "color-blind.css";
+  colorBlind = !colorBlind;
+}
+color-blind.css: uses color-safe palette
+Avoids red/green
+
+Uses blues, teals, oranges, and yellows with strong contrast
+
+Test your site using Coblis
+
+🔐 Optional Stretch Features
+
+Feature	What it adds
+Volunteer login	Simple username/password login to track who submitted updates
+Emergency Flag	Highlight pets needing urgent care
+Print Log	Button to print or export update log for any pet
+Admin mode	Add/edit pet info with a password
+🧠 Tech Stack
+
+Part	Tool
+Frontend	HTML, CSS, JavaScript
+Backend	Python + Flask
+Version Control	Git + GitHub
+Local Testing	localhost:5000
+Deployment (optional)	Render (Flask) + GitHub Pages/Vercel (frontend)
+🧪 Sample Pet Data
+json
+Copy
+Edit
+[
+  {
+    "id": 1,
+    "name": "Luna",
+    "feeding_instructions": "Feed twice a day, morning and evening",
+    "medical_notes": "Allergy meds once daily",
+    "behavior_notes": "Shy, hides at first but friendly",
+    "updates": ["Fed at 9am. Hiding under bed.", "Took meds. Ate all food."]
+  }
+]
+🧑‍💻 GitHub Folder Structure
+pgsql
+Copy
+Edit
+/petconnect-frontend
+  ├── index.html
+  ├── pet.html
+  ├── update.html
+  ├── checklist.html
+  ├── style.css
+  ├── color-blind.css
+  ├── script.js
+
+/petconnect-backend
+  ├── app.py
+  ├── pets.json (optional)
+  ├── README.md
+
+
+
+🗂️ Required Pages for PawPass
+Filename
+Page Title
+Purpose
+index.html
+Pet List / Home Page
+Shows all pets in a list or grid. Each pet has a “View Profile” button.
+pet.html
+Pet Profile Page
+Displays full details about a single pet (feeding, medical, behavior, past updates).
+update.html
+Add Update Page
+Lets volunteers submit a daily note or update for a selected pet.
+checklist.html
+Shift Checklist Page
+End-of-shift checklist for that pet (Fed? Meds given? etc.)
+style.css
+(Stylesheet)
+Main styling for layout, buttons, fonts, etc.
+color-blind.css
+(Alt Stylesheet)
+Color-blind-friendly version of your theme.
+script.js
+(Script file)
+Connects your frontend to your backend (calls Flask API).
+
+
+
+
+
+AI Chat Assistant for Volunteers
+Add a simple chatbot to answer:
+"What time do I give meds to Luna?"
+
+
+"What do I do if Max skips a meal?"
+
+
+You can train it with your own FAQ.
+Use:
+Langchain + ChatGPT
+
+
+Or use custom GPT with your care instructions
+

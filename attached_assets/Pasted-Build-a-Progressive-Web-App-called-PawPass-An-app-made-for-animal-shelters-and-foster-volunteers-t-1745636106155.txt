@@ -1,0 +1,22 @@
+Build a Progressive Web App called “PawPass" An app made for animal shelters and foster volunteers to easily transfer pet information between shifts, volunteers, fosters, shelters —
+without messy emails and Excel sheets.
+
+Design & UI Guidelines:
+- **Aesthetic:** Create an elegant, professional interface inspired by Apple design principles.
+- **Typography:** Use SF Pro (or a similar refined, sans-serif) font.
+- **UI Elements:** Implement smooth, rounded edges on buttons, cards, and input fields; use subtle shadows and ample white space.
+- **Layout:** Ensure a responsive design that looks fantastic on both desktop and mobile.
+- **Animations:** Include subtle animations and transitions for an overall classy user experience.
+Technical Requirements:
+- **Backend:** Develop RESTful API endpoints using Node.js (Express) or Python (Flask/FastAPI) for handling authentication, email analysis, encryption, and AI unsubscription.
+- **Frontend:** Build a modern PWA using React or Vue.js to provide the dashboard and user interfaces.
+- **Database:** Use Replit’s built‑in database to store user settings, email data, and analysis logs.
+- **Authentication:** Integrate Replit’s built-in OAuth for multi-provider SSO.
+- **AI Integration:** Connect to OpenAI APIs to create another section in the navbar that leads to a chatbot that can help the user with any problems related to the pet they are dealing wit. Make it sympathetic and kind and helpful
+Project Scaffolding & Documentation:
+1. Initialize a GitHub repository from Replit with clear module boundaries
+2. Commit code regularly, and include documentation that outlines your architecture, API endpoints, and integration patterns.
+3. Provide sample code snippets for key functionalities, such as:
+   - An endpoint that analyzes email content using OpenAI.
+4. Use Replit’s real-time collaboration and deployment features to iterate rapidly.
+Please generate a complete project outline with relevant code examples, ensuring that the design remains luxurious, minimalist, and professional while effectively integrating all of the above features and technologies.
