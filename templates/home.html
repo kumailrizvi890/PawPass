@@ -19,9 +19,9 @@
 </div>
 
 <div class="spline-animation-section">
-    <h3>Explore the PawPass Experience</h3>
+    <h3>The Heart of Pet Care</h3>
     <div class="spline-container">
-        <iframe src="https://my.spline.design/untitled-0728f787-2d27-4263-9a50-758a2827ba6f/embed" frameborder="0" width="100%" height="100%"></iframe>
+        <canvas id="heart-animation"></canvas>
     </div>
 </div>
 
@@ -193,6 +193,13 @@
         border-radius: var(--border-radius);
         overflow: hidden;
         box-shadow: var(--card-shadow);
+        background-color: white;
+    }
+    
+    #heart-animation {
+        width: 100%;
+        height: 100%;
+        display: block;
     }
     
     /* Responsive Adjustments */
@@ -223,4 +230,5 @@
 {% endblock %}
 
 {% block scripts %}
+<script src="{{ url_for('static', filename='js/spline.js') }}"></script>
 {% endblock %}
