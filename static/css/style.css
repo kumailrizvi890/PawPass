@@ -5,17 +5,17 @@
 
 /* CSS Variables */
 :root {
-  --background-color: #F8F9FA;
-  --primary-color: #0072B2;
-  --primary-color-dark: #005d91;
-  --accent-color: #E69F00;
-  --secondary-accent: #009E73;
-  --tertiary-accent: #F0E442;
+  --background-color: #FFFFFF;
+  --primary-color: #C63930; /* Red Block RGB: (198, 57, 48) */
+  --primary-color-dark: #A32E26;
+  --accent-color: #4A8C97; /* Teal Block RGB: (74, 140, 151) */
+  --secondary-accent: #F4B2BA; /* Light Pink Block RGB: (244, 178, 186) */
+  --tertiary-accent: #295258; /* Dark Teal Block RGB: (41, 82, 88) */
   --text-color: #1C1C1C;
   --light-gray: #e2e8f0;
-  --success-color: #28a745;
-  --warning-color: #ffc107;
-  --danger-color: #dc3545;
+  --success-color: #4A8C97;
+  --warning-color: #F4B2BA;
+  --danger-color: #C63930;
   --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   --spacing-sm: 8px;
   --spacing-md: 16px;

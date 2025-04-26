@@ -1,8 +1,11 @@
 import os
 import json
 import logging
+import uuid
 from datetime import datetime, date, time
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
+from werkzeug.utils import secure_filename
+from PIL import Image
 
 # Setup logging
 logging.basicConfig(level=logging.DEBUG)
@@ -10,6 +13,13 @@ logging.basicConfig(level=logging.DEBUG)
 # Initialize Flask app
 app = Flask(__name__)
 app.secret_key = os.environ.get("SESSION_SECRET", "pawpass-dev-key")
+
+# Configure upload folders
+UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'static', 'uploads')
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # 5MB max upload size
 
 # Configure database
 database_url = os.environ.get("DATABASE_URL")
@@ -145,6 +155,35 @@ def get_pet_by_id(pet_id):
         logging.error(f"Error getting pet by ID: {e}")
         return None
 
+# Helper function to check if file extension is allowed
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+# Function to save uploaded image and return the file path
+def save_pet_image(file):
+    if file and allowed_file(file.filename):
+        # Generate a unique filename with UUID to prevent overwriting
+        original_filename = secure_filename(file.filename)
+        file_extension = original_filename.rsplit('.', 1)[1].lower()
+        unique_filename = f"{uuid.uuid4().hex}.{file_extension}"
+        
+        # Save the original file
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
+        file.save(file_path)
+        
+        # Create a thumbnail version (optional for performance)
+        try:
+            with Image.open(file_path) as img:
+                # Keep aspect ratio, max dimension 800px
+                img.thumbnail((800, 800))
+                img.save(file_path)
+        except Exception as e:
+            logging.error(f"Error creating thumbnail: {e}")
+        
+        # Return the relative path for storage in the database
+        return os.path.join('uploads', unique_filename).replace('\\', '/')
+    return None
+
 # Try to migrate data from JSON to database if needed
 with app.app_context():
     migrate_data_to_db()
@@ -153,7 +192,16 @@ with app.app_context():
 @app.route('/')
 def index():
     """Home page - displays list of all pets"""
-    pets = load_pets()
+    search_query = request.args.get('search', '').strip()
+    
+    with app.app_context():
+        if search_query:
+            # Search for pets by name
+            pets = Pet.query.filter(Pet.name.ilike(f'%{search_query}%')).all()
+        else:
+            # Get all pets
+            pets = Pet.query.all()
+    
     return render_template('index.html', pets=pets)
 
 @app.route('/pet/<int:pet_id>')
@@ -220,6 +268,68 @@ def add_update(pet_id):
             flash('Update cannot be empty', 'error')
     
     return render_template('update.html', pet=pet)
+
+@app.route('/add-pet', methods=['GET', 'POST'])
+def add_pet():
+    """Add a new pet page"""
+    if request.method == 'POST':
+        # Get form data
+        name = request.form.get('name')
+        species = request.form.get('species')
+        breed = request.form.get('breed', '')
+        age = request.form.get('age', None)
+        gender = request.form.get('gender', '')
+        description = request.form.get('description', '')
+        is_emergency = 'is_emergency' in request.form
+        
+        # Validate required fields
+        if not name or not species:
+            flash('Name and species are required', 'error')
+            return render_template('add_pet.html')
+        
+        # Convert age to integer if provided
+        if age:
+            try:
+                age = int(age)
+            except ValueError:
+                age = None
+        
+        # Process image upload
+        image_url = None
+        if 'image' in request.files:
+            file = request.files['image']
+            if file.filename:
+                image_url = save_pet_image(file)
+                # Make image_url relative to static folder for displaying in templates
+                if image_url and not image_url.startswith('http'):
+                    image_url = f"/static/{image_url}"
+        
+        # Create and save the new pet
+        with app.app_context():
+            try:
+                pet = Pet(
+                    name=name,
+                    species=species,
+                    breed=breed,
+                    age=age,
+                    gender=gender,
+                    description=description,
+                    image_url=image_url,
+                    is_emergency=is_emergency
+                )
+                
+                db.session.add(pet)
+                db.session.commit()
+                
+                flash('Pet added successfully', 'success')
+                return redirect(url_for('pet_profile', pet_id=pet.id))
+            except Exception as e:
+                db.session.rollback()
+                logging.error(f"Error adding pet: {e}")
+                flash('Error adding pet. Please try again.', 'error')
+    
+    # GET request - show the form
+    return render_template('add_pet.html')
 
 @app.route('/pet/<int:pet_id>/checklist', methods=['GET', 'POST'])
 def complete_checklist(pet_id):

@@ -6,17 +6,17 @@
 /* CSS Variables with color-blind friendly color scheme */
 :root {
   --background-color: #F8F9FA;
-  --primary-color: #0072B2;  /* Blue - distinguishable in most color vision deficiencies */
-  --primary-color-dark: #005682;
-  --accent-color: #E69F00;   /* Orange - visible in most color vision deficiencies */
-  --secondary-accent: #009E73; /* Green - more visible in most color vision deficiencies */
-  --tertiary-accent: #F0E442; /* Yellow - distinguishable in most color vision deficiencies */
-  --error-color: #D55E00;    /* Red orange - more visible than pure red */
-  --success-color: #009E73;  /* Green - more visible than standard green */
+  --primary-color: #004987;  /* Dark Blue - RGB: (0, 73, 135) */
+  --primary-color-dark: #003665;
+  --accent-color: #E69F00;   /* Soft Orange - RGB: (230, 159, 0) */
+  --secondary-accent: #009E73; /* Bluish Green - RGB: (0, 158, 115) */
+  --tertiary-accent: #CC79A7; /* Light Pinkish Purple - RGB: (204, 121, 167) */
+  --error-color: #CC79A7;    /* Light Pinkish Purple for errors */
+  --success-color: #009E73;  /* Bluish Green for success */
   --text-color: #000000;     /* Black - maximum contrast */
   --light-gray: #e2e8f0;
-  --warning-color: #E69F00;  /* Orange - replaces yellow for warnings */
-  --danger-color: #D55E00;   /* Red orange - replaces red for errors/dangers */
+  --warning-color: #E69F00;  /* Soft Orange for warnings */
+  --danger-color: #004987;   /* Dark Blue for dangers */
   --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Increased shadow contrast */
   --spacing-sm: 8px;
   --spacing-md: 16px;

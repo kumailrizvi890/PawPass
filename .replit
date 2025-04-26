@@ -2,7 +2,7 @@ modules = ["python-3.11", "python3"]
 
 [nix]
 channel = "stable-24_05"
-packages = ["imagemagick", "openssl", "postgresql"]
+packages = ["freetype", "imagemagick", "lcms2", "libimagequant", "libjpeg", "libtiff", "libwebp", "libxcrypt", "openjpeg", "openssl", "postgresql", "tcl", "tk", "zlib"]
 
 [deployment]
 deploymentTarget = "autoscale"
