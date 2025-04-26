@@ -19,9 +19,14 @@
 </div>
 
 <div class="spline-animation-section">
-    <h3>The Heart of Pet Care</h3>
+    <h3>
+        <i class="fas fa-heart" style="margin-right: 8px; color: var(--primary-color);"></i>
+        The Heart of Pet Care
+        <i class="fas fa-heart" style="margin-left: 8px; color: var(--primary-color);"></i>
+    </h3>
+    <p class="animation-subtitle">Every pet deserves compassionate care and a loving home</p>
     <div class="spline-container">
-        <canvas id="heart-animation"></canvas>
+        <iframe src='https://my.spline.design/heartwithburstlines-zDkeD0NjlM1lX9jnvrXigb0q/' frameborder='0' width='100%' height='100%'></iframe>
     </div>
 </div>
 
@@ -173,9 +178,16 @@
     
     /* Spline Animation Section */
     .spline-animation-section {
-        margin-bottom: 60px;
+        margin: 20px auto 60px;
         text-align: center;
-        padding: 20px;
+        padding: 30px 20px;
+        max-width: 1000px;
+        background: linear-gradient(to bottom, rgba(244, 178, 186, 0.05), rgba(244, 178, 186, 0.15));
+        border-radius: var(--border-radius);
+    }
+    
+    body.colorblind-mode .spline-animation-section {
+        background: linear-gradient(to bottom, rgba(0, 158, 115, 0.05), rgba(0, 158, 115, 0.15));
     }
     
     .spline-animation-section h3 {
@@ -188,12 +200,35 @@
         color: var(--colorblind-primary);
     }
     
+    body.colorblind-mode .spline-animation-section h3 i {
+        color: var(--colorblind-primary);
+    }
+    
+    .animation-subtitle {
+        font-size: 1.2rem;
+        margin-bottom: 25px;
+        color: var(--text-color);
+        font-style: italic;
+        opacity: 0.8;
+    }
+    
     .spline-container {
         height: 500px;
         border-radius: var(--border-radius);
         overflow: hidden;
         box-shadow: var(--card-shadow);
-        background-color: white;
+        background-color: rgba(255, 255, 255, 0.9);
+        border: 1px solid rgba(244, 178, 186, 0.3);
+        transition: all 0.3s ease;
+    }
+    
+    .spline-container:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    body.colorblind-mode .spline-container {
+        border: 1px solid rgba(0, 158, 115, 0.3);
     }
     
     #heart-animation {
