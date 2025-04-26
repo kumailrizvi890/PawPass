@@ -12,6 +12,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Add form validation for update and checklist forms
     initFormValidation();
+    
+    // Initialize PWA install functionality
+    initPwaInstall();
 });
 
 // Color-blind mode toggle
@@ -133,4 +136,90 @@ function formatDateTime(date, time) {
 // Function to confirm before deleting (if needed later)
 function confirmDelete(itemType) {
     return confirm(`Are you sure you want to delete this ${itemType}?`);
+}
+
+// PWA Installation
+let deferredPrompt;
+
+function initPwaInstall() {
+    const installButton = document.getElementById('install-button');
+    
+    // Hide the install button by default
+    if (installButton) {
+        installButton.style.display = 'none';
+    }
+    
+    // Save the event for later use
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        
+        // Show the install button
+        if (installButton) {
+            installButton.style.display = 'inline-block';
+            
+            // Add click event listener to the install button
+            installButton.addEventListener('click', installPwa);
+        }
+    });
+    
+    // Listen for appinstalled event to hide the button after installation
+    window.addEventListener('appinstalled', () => {
+        console.log('PawPass has been installed');
+        // Hide the button
+        if (installButton) {
+            installButton.style.display = 'none';
+        }
+        deferredPrompt = null;
+    });
+}
+
+// Function to trigger PWA installation
+function installPwa() {
+    if (!deferredPrompt) {
+        return;
+    }
+    
+    // Show the installation prompt
+    deferredPrompt.prompt();
+    
+    // Wait for the user to respond to the prompt
+    deferredPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+            console.log('User accepted the PWA installation');
+        } else {
+            console.log('User dismissed the PWA installation');
+        }
+        
+        // Clear the deferred prompt
+        deferredPrompt = null;
+        
+        // Hide the button
+        const installButton = document.getElementById('install-button');
+        if (installButton) {
+            installButton.style.display = 'none';
+        }
+    });
+}
+
+// Offline data handling
+function saveOfflineData(url, method, data) {
+    let offlineUpdates = JSON.parse(localStorage.getItem('offlineUpdates') || '[]');
+    
+    offlineUpdates.push({
+        url, 
+        method, 
+        data,
+        timestamp: new Date().getTime()
+    });
+    
+    localStorage.setItem('offlineUpdates', JSON.stringify(offlineUpdates));
+    
+    // Try to register a sync
+    if ('serviceWorker' in navigator && 'SyncManager' in window) {
+        navigator.serviceWorker.ready.then(registration => {
+            registration.sync.register('sync-updates')
+                .catch(err => console.error('Sync registration failed:', err));
+        });
+    }
 }

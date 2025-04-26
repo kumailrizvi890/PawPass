@@ -3,17 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PawPass - A lightweight web platform for animal shelter volunteers to track pet care">
+    <meta name="theme-color" content="#0072B2">
     <title>{% block title %}PawPass - Pet Care Handoff{% endblock %}</title>
     <link id="main-stylesheet" rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- PWA Support -->
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='icons/icon-192x192.png') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='icons/icon-192x192.png') }}">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     {% block head_extra %}{% endblock %}
 </head>
 <body>
     <header>
         <div class="container">
-            <h1><a href="{{ url_for('index') }}" style="color: white; text-decoration: none;">
-                <i class="fas fa-paw"></i> PawPass
+            <h1><a href="{{ url_for('index') }}" style="color: white; text-decoration: none;" class="logo-link">
+                <img src="{{ url_for('static', filename='images/pawpass-logo.png') }}" alt="PawPass Logo" class="header-logo">
+                <span class="logo-text">PawPass</span>
             </a></h1>
             <nav>
                 <button id="color-blind-toggle" onclick="toggleColorBlindMode()">
@@ -29,6 +38,9 @@
                         <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
                     </svg>
                     Color-Blind Mode
+                </button>
+                <button id="install-button" style="display: none;">
+                    <i class="fas fa-download"></i> Install App
                 </button>
             </nav>
         </div>
@@ -62,6 +74,22 @@
     </div>
 
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/static/service-worker.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('ServiceWorker registration failed: ', error);
+                    });
+            });
+        }
+    </script>
+    
     {% block scripts %}{% endblock %}
 </body>
 </html>

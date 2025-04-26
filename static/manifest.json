@@ -1,44 +1,45 @@
 {
-  "name": "PawPass",
+  "name": "PawPass - Pet Care Handoff",
   "short_name": "PawPass",
   "description": "A lightweight web platform for animal shelter volunteers to track pet care",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#F8F9FA",
+  "background_color": "#ffffff",
   "theme_color": "#0072B2",
+  "orientation": "portrait-primary",
   "icons": [
     {
       "src": "/static/icons/icon-192x192.png",
-      "sizes": "192x192",
       "type": "image/png",
+      "sizes": "192x192",
       "purpose": "any"
     },
     {
       "src": "/static/icons/icon-512x512.png",
-      "sizes": "512x512",
       "type": "image/png",
+      "sizes": "512x512",
       "purpose": "any"
     },
     {
       "src": "/static/icons/maskable-icon-192x192.png",
-      "sizes": "192x192",
       "type": "image/png",
+      "sizes": "192x192",
       "purpose": "maskable"
     },
     {
       "src": "/static/icons/maskable-icon-512x512.png",
-      "sizes": "512x512",
       "type": "image/png",
+      "sizes": "512x512",
       "purpose": "maskable"
     }
   ],
-  "orientation": "portrait",
-  "categories": ["utilities", "productivity"],
   "shortcuts": [
     {
-      "name": "Home",
+      "name": "Add Pet Update",
+      "short_name": "Update",
+      "description": "Add a new pet update",
       "url": "/",
-      "description": "View all pets"
+      "icons": [{ "src": "/static/icons/icon-192x192.png", "sizes": "192x192" }]
     }
   ]
 }
