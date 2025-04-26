@@ -22,17 +22,14 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # 5MB max upload size
 
 # Configure database
-database_url = os.environ.get("DATABASE_URL")
-if database_url:
-    app.config["SQLALCHEMY_DATABASE_URI"] = database_url
-    app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
-        "pool_recycle": 300,
-        "pool_pre_ping": True,
-    }
-    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-    logging.info(f"Database configuration loaded: {database_url[:20]}...")
-else:
-    logging.error("DATABASE_URL environment variable not found")
+database_url = os.environ.get("DATABASE_URL", "sqlite:///pawpass.db")
+app.config["SQLALCHEMY_DATABASE_URI"] = database_url
+app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+    "pool_recycle": 300,
+    "pool_pre_ping": True,
+}
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+logging.info(f"Using database: {database_url}")
 
 # Initialize database
 from models import db, Pet, PetUpdate, Checklist, ChecklistItem, ChecklistCompletion
