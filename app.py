@@ -130,7 +130,8 @@ def migrate_data_to_db():
 def load_pets():
     """Load all pets from the database"""
     try:
-        return Pet.query.all()
+        with app.app_context():
+            return Pet.query.all()
     except Exception as e:
         logging.error(f"Error loading pets from database: {e}")
         return []
@@ -138,7 +139,8 @@ def load_pets():
 def get_pet_by_id(pet_id):
     """Get a pet by ID from the database"""
     try:
-        return Pet.query.get(pet_id)
+        with app.app_context():
+            return Pet.query.get(pet_id)
     except Exception as e:
         logging.error(f"Error getting pet by ID: {e}")
         return None
@@ -160,12 +162,22 @@ def pet_profile(pet_id):
     pet = get_pet_by_id(pet_id)
     if pet:
         # Get the pet's updates, sorted by date and time (most recent first)
-        pet_updates = PetUpdate.query.filter_by(pet_id=pet.id)\
-            .order_by(PetUpdate.update_date.desc(), PetUpdate.update_time.desc()).all()
-        
-        # Get pet's checklists, sorted by date and time (most recent first)
-        pet_checklists = Checklist.query.filter_by(pet_id=pet.id)\
-            .order_by(Checklist.completion_date.desc(), Checklist.completion_time.desc()).all()
+        with app.app_context():
+            pet_updates = PetUpdate.query.filter_by(pet_id=pet.id)\
+                .order_by(PetUpdate.update_date.desc(), PetUpdate.update_time.desc()).all()
+            
+            # Get pet's checklists, sorted by date and time (most recent first)
+            pet_checklists = Checklist.query.filter_by(pet_id=pet.id)\
+                .order_by(Checklist.completion_date.desc(), Checklist.completion_time.desc()).all()
+            
+            # Get completed items for each checklist
+            for checklist in pet_checklists:
+                checklist.completed_items = []
+                completions = ChecklistCompletion.query.filter_by(checklist_id=checklist.id, completed=True).all()
+                for completion in completions:
+                    item = ChecklistItem.query.get(completion.checklist_item_id)
+                    if item:
+                        checklist.completed_items.append(item)
         
         return render_template('pet.html', pet=pet, updates=pet_updates, checklists=pet_checklists)
     else:
@@ -186,23 +198,24 @@ def add_update(pet_id):
             now = datetime.now()
             
             # Create and save a new update
-            new_update = PetUpdate(
-                pet_id=pet.id,
-                update_text=update_text,
-                update_date=now.date(),
-                update_time=now.time(),
-                volunteer_name=request.form.get('volunteer_name', '')
-            )
-            
-            try:
-                db.session.add(new_update)
-                db.session.commit()
-                flash('Update added successfully', 'success')
-                return redirect(url_for('pet_profile', pet_id=pet_id))
-            except Exception as e:
-                db.session.rollback()
-                logging.error(f"Error adding update: {e}")
-                flash('Error adding update. Please try again.', 'error')
+            with app.app_context():
+                new_update = PetUpdate(
+                    pet_id=pet.id,
+                    update_text=update_text,
+                    update_date=now.date(),
+                    update_time=now.time(),
+                    volunteer_name=request.form.get('volunteer_name', '')
+                )
+                
+                try:
+                    db.session.add(new_update)
+                    db.session.commit()
+                    flash('Update added successfully', 'success')
+                    return redirect(url_for('pet_profile', pet_id=pet_id))
+                except Exception as e:
+                    db.session.rollback()
+                    logging.error(f"Error adding update: {e}")
+                    flash('Error adding update. Please try again.', 'error')
         else:
             flash('Update cannot be empty', 'error')
     
@@ -217,113 +230,118 @@ def complete_checklist(pet_id):
         return redirect(url_for('index'))
     
     # Get checklist items
-    checklist_items = ChecklistItem.query.all()
+    with app.app_context():
+        checklist_items = ChecklistItem.query.all()
     
     if request.method == 'POST':
         notes = request.form.get('notes', '')
         volunteer_name = request.form.get('volunteer_name', '')
         now = datetime.now()
         
-        # Create the checklist
-        checklist = Checklist(
-            pet_id=pet.id,
-            volunteer_name=volunteer_name,
-            completion_date=now.date(),
-            completion_time=now.time(),
-            notes=notes
-        )
-        
-        try:
-            db.session.add(checklist)
-            db.session.flush()  # Get the checklist ID
+        with app.app_context():
+            # Create the checklist
+            checklist = Checklist(
+                pet_id=pet.id,
+                volunteer_name=volunteer_name,
+                completion_date=now.date(),
+                completion_time=now.time(),
+                notes=notes
+            )
             
-            # Add checklist completions based on form data
-            for item in checklist_items:
-                is_completed = str(item.id) in request.form.getlist('items')
-                completion = ChecklistCompletion(
-                    checklist_id=checklist.id,
-                    checklist_item_id=item.id,
-                    completed=is_completed
-                )
-                db.session.add(completion)
-            
-            db.session.commit()
-            flash('Checklist completed successfully', 'success')
-            return redirect(url_for('pet_profile', pet_id=pet_id))
-        except Exception as e:
-            db.session.rollback()
-            logging.error(f"Error completing checklist: {e}")
-            flash('Error saving checklist. Please try again.', 'error')
+            try:
+                db.session.add(checklist)
+                db.session.flush()  # Get the checklist ID
+                
+                # Add checklist completions based on form data
+                for item in checklist_items:
+                    is_completed = str(item.id) in request.form.getlist('items')
+                    completion = ChecklistCompletion(
+                        checklist_id=checklist.id,
+                        checklist_item_id=item.id,
+                        completed=is_completed
+                    )
+                    db.session.add(completion)
+                
+                db.session.commit()
+                flash('Checklist completed successfully', 'success')
+                return redirect(url_for('pet_profile', pet_id=pet_id))
+            except Exception as e:
+                db.session.rollback()
+                logging.error(f"Error completing checklist: {e}")
+                flash('Error saving checklist. Please try again.', 'error')
     
     return render_template('checklist.html', pet=pet, checklist_items=checklist_items)
 
 # Helper function to serialize a Pet object to JSON
 def pet_to_json(pet):
     """Convert a Pet object to a JSON-serializable dictionary"""
-    # Get pet updates
-    updates = []
-    for update in PetUpdate.query.filter_by(pet_id=pet.id).order_by(PetUpdate.created_at.desc()).all():
-        updates.append({
-            "id": update.id,
-            "date": update.update_date.strftime('%Y-%m-%d'),
-            "time": update.update_time.strftime('%H:%M'),
-            "note": update.update_text,
-            "volunteer": update.volunteer_name
-        })
-    
-    # Get pet checklists with completed items
-    checklists = []
-    for checklist in Checklist.query.filter_by(pet_id=pet.id).order_by(Checklist.created_at.desc()).all():
-        # Get the completed items for this checklist
-        completed_items = []
-        for completion in ChecklistCompletion.query.filter_by(checklist_id=checklist.id).all():
-            if completion.completed:
-                item = ChecklistItem.query.get(completion.checklist_item_id)
-                completed_items.append({
-                    "id": item.id,
-                    "description": item.description
-                })
+    with app.app_context():
+        # Get pet updates
+        updates = []
+        for update in PetUpdate.query.filter_by(pet_id=pet.id).order_by(PetUpdate.created_at.desc()).all():
+            updates.append({
+                "id": update.id,
+                "date": update.update_date.strftime('%Y-%m-%d'),
+                "time": update.update_time.strftime('%H:%M'),
+                "note": update.update_text,
+                "volunteer": update.volunteer_name
+            })
         
-        checklists.append({
-            "id": checklist.id,
-            "date": checklist.completion_date.strftime('%Y-%m-%d'),
-            "time": checklist.completion_time.strftime('%H:%M'),
-            "notes": checklist.notes,
-            "volunteer": checklist.volunteer_name,
-            "completed_items": completed_items
-        })
-    
-    return {
-        "id": pet.id,
-        "name": pet.name,
-        "species": pet.species,
-        "breed": pet.breed,
-        "age": pet.age,
-        "gender": pet.gender,
-        "description": pet.description,
-        "image_url": pet.image_url,
-        "is_emergency": pet.is_emergency,
-        "updates": updates,
-        "checklists": checklists
-    }
+        # Get pet checklists with completed items
+        checklists = []
+        for checklist in Checklist.query.filter_by(pet_id=pet.id).order_by(Checklist.created_at.desc()).all():
+            # Get the completed items for this checklist
+            completed_items = []
+            for completion in ChecklistCompletion.query.filter_by(checklist_id=checklist.id).all():
+                if completion.completed:
+                    item = ChecklistItem.query.get(completion.checklist_item_id)
+                    completed_items.append({
+                        "id": item.id,
+                        "description": item.description
+                    })
+            
+            checklists.append({
+                "id": checklist.id,
+                "date": checklist.completion_date.strftime('%Y-%m-%d'),
+                "time": checklist.completion_time.strftime('%H:%M'),
+                "notes": checklist.notes,
+                "volunteer": checklist.volunteer_name,
+                "completed_items": completed_items
+            })
+        
+        return {
+            "id": pet.id,
+            "name": pet.name,
+            "species": pet.species,
+            "breed": pet.breed,
+            "age": pet.age,
+            "gender": pet.gender,
+            "description": pet.description,
+            "image_url": pet.image_url,
+            "is_emergency": pet.is_emergency,
+            "updates": updates,
+            "checklists": checklists
+        }
 
 # API Endpoints
 @app.route('/api/pets', methods=['GET'])
 def api_get_pets():
     """API endpoint to get all pets"""
-    pets = []
-    for pet in Pet.query.all():
-        pets.append(pet_to_json(pet))
-    return jsonify(pets)
+    with app.app_context():
+        pets = []
+        for pet in Pet.query.all():
+            pets.append(pet_to_json(pet))
+        return jsonify(pets)
 
 @app.route('/api/pets/<int:pet_id>', methods=['GET'])
 def api_get_pet(pet_id):
     """API endpoint to get a specific pet"""
-    pet = Pet.query.get(pet_id)
-    if pet:
-        return jsonify(pet_to_json(pet))
-    else:
-        return jsonify({"error": "Pet not found"}), 404
+    with app.app_context():
+        pet = Pet.query.get(pet_id)
+        if pet:
+            return jsonify(pet_to_json(pet))
+        else:
+            return jsonify({"error": "Pet not found"}), 404
 
 @app.route('/api/pets/<int:pet_id>/update', methods=['POST'])
 def api_add_update(pet_id):
@@ -335,37 +353,38 @@ def api_add_update(pet_id):
     update_text = data['update']
     volunteer_name = data.get('volunteer_name', '')
     
-    pet = Pet.query.get(pet_id)
-    if not pet:
-        return jsonify({"error": "Pet not found"}), 404
-    
-    try:
-        now = datetime.now()
-        new_update = PetUpdate(
-            pet_id=pet.id,
-            update_text=update_text,
-            update_date=now.date(),
-            update_time=now.time(),
-            volunteer_name=volunteer_name
-        )
+    with app.app_context():
+        pet = Pet.query.get(pet_id)
+        if not pet:
+            return jsonify({"error": "Pet not found"}), 404
         
-        db.session.add(new_update)
-        db.session.commit()
-        
-        return jsonify({
-            "success": True, 
-            "update": {
-                "id": new_update.id,
-                "date": new_update.update_date.strftime('%Y-%m-%d'),
-                "time": new_update.update_time.strftime('%H:%M'),
-                "note": new_update.update_text,
-                "volunteer": new_update.volunteer_name
-            }
-        })
-    except Exception as e:
-        db.session.rollback()
-        logging.error(f"Error adding update via API: {e}")
-        return jsonify({"error": str(e)}), 500
+        try:
+            now = datetime.now()
+            new_update = PetUpdate(
+                pet_id=pet.id,
+                update_text=update_text,
+                update_date=now.date(),
+                update_time=now.time(),
+                volunteer_name=volunteer_name
+            )
+            
+            db.session.add(new_update)
+            db.session.commit()
+            
+            return jsonify({
+                "success": True, 
+                "update": {
+                    "id": new_update.id,
+                    "date": new_update.update_date.strftime('%Y-%m-%d'),
+                    "time": new_update.update_time.strftime('%H:%M'),
+                    "note": new_update.update_text,
+                    "volunteer": new_update.volunteer_name
+                }
+            })
+        except Exception as e:
+            db.session.rollback()
+            logging.error(f"Error adding update via API: {e}")
+            return jsonify({"error": str(e)}), 500
 
 @app.route('/api/pets/<int:pet_id>/checklist', methods=['POST'])
 def api_complete_checklist(pet_id):
@@ -374,66 +393,67 @@ def api_complete_checklist(pet_id):
     if not data:
         return jsonify({"error": "Missing checklist data"}), 400
     
-    pet = Pet.query.get(pet_id)
-    if not pet:
-        return jsonify({"error": "Pet not found"}), 404
-    
-    notes = data.get('notes', '')
-    volunteer_name = data.get('volunteer_name', '')
-    completed_items = data.get('completed_items', [])
-    
-    try:
-        now = datetime.now()
-        checklist = Checklist(
-            pet_id=pet.id,
-            volunteer_name=volunteer_name,
-            completion_date=now.date(),
-            completion_time=now.time(),
-            notes=notes
-        )
+    with app.app_context():
+        pet = Pet.query.get(pet_id)
+        if not pet:
+            return jsonify({"error": "Pet not found"}), 404
         
-        db.session.add(checklist)
-        db.session.flush()  # Get the checklist ID
+        notes = data.get('notes', '')
+        volunteer_name = data.get('volunteer_name', '')
+        completed_items = data.get('completed_items', [])
         
-        # Add checklist completions
-        for item_id in completed_items:
-            # Verify item exists
-            item = ChecklistItem.query.get(item_id)
-            if item:
-                completion = ChecklistCompletion(
-                    checklist_id=checklist.id,
-                    checklist_item_id=item.id,
-                    completed=True
-                )
-                db.session.add(completion)
-        
-        db.session.commit()
-        
-        # Return the created checklist data
-        items = []
-        for completion in ChecklistCompletion.query.filter_by(checklist_id=checklist.id).all():
-            if completion.completed:
-                item = ChecklistItem.query.get(completion.checklist_item_id)
-                items.append({
-                    "id": item.id,
-                    "description": item.description
-                })
-        
-        return jsonify({
-            "success": True, 
-            "checklist": {
-                "id": checklist.id,
-                "date": checklist.completion_date.strftime('%Y-%m-%d'),
-                "time": checklist.completion_time.strftime('%H:%M'),
-                "notes": checklist.notes,
-                "volunteer": checklist.volunteer_name,
-                "completed_items": items
-            }
-        })
-    except Exception as e:
-        db.session.rollback()
-        logging.error(f"Error adding checklist via API: {e}")
-        return jsonify({"error": str(e)}), 500
+        try:
+            now = datetime.now()
+            checklist = Checklist(
+                pet_id=pet.id,
+                volunteer_name=volunteer_name,
+                completion_date=now.date(),
+                completion_time=now.time(),
+                notes=notes
+            )
+            
+            db.session.add(checklist)
+            db.session.flush()  # Get the checklist ID
+            
+            # Add checklist completions
+            for item_id in completed_items:
+                # Verify item exists
+                item = ChecklistItem.query.get(item_id)
+                if item:
+                    completion = ChecklistCompletion(
+                        checklist_id=checklist.id,
+                        checklist_item_id=item.id,
+                        completed=True
+                    )
+                    db.session.add(completion)
+            
+            db.session.commit()
+            
+            # Return the created checklist data
+            items = []
+            for completion in ChecklistCompletion.query.filter_by(checklist_id=checklist.id).all():
+                if completion.completed:
+                    item = ChecklistItem.query.get(completion.checklist_item_id)
+                    items.append({
+                        "id": item.id,
+                        "description": item.description
+                    })
+            
+            return jsonify({
+                "success": True, 
+                "checklist": {
+                    "id": checklist.id,
+                    "date": checklist.completion_date.strftime('%Y-%m-%d'),
+                    "time": checklist.completion_time.strftime('%H:%M'),
+                    "notes": checklist.notes,
+                    "volunteer": checklist.volunteer_name,
+                    "completed_items": items
+                }
+            })
+        except Exception as e:
+            db.session.rollback()
+            logging.error(f"Error adding checklist via API: {e}")
+            return jsonify({"error": str(e)}), 500
 
 # Error handlers
 @app.errorhandler(404)

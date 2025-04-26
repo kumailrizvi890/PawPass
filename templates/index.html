@@ -13,16 +13,20 @@
         {% for pet in pets %}
             <div class="card pet-card">
                 <div class="pet-card-image">
-                    <img src="{{ pet.image }}" alt="{{ pet.name }}">
+                    {% if pet.image_url %}
+                        <img src="{{ pet.image_url }}" alt="{{ pet.name }}">
+                    {% else %}
+                        <div class="placeholder-image">{{ pet.name[0] }}</div>
+                    {% endif %}
                 </div>
                 <div class="pet-card-content">
                     <h3>{{ pet.name }}</h3>
                     <p><strong>Species:</strong> {{ pet.species }}</p>
                     
-                    {% if pet.updates %}
-                        <p><strong>Last update:</strong> {{ pet.updates[0].date }} at {{ pet.updates[0].time }}</p>
-                    {% else %}
-                        <p><strong>Last update:</strong> No updates yet</p>
+                    <p><strong>Last update:</strong> No updates yet</p>
+                    
+                    {% if pet.is_emergency %}
+                        <div class="emergency-badge">Emergency Care</div>
                     {% endif %}
                 </div>
                 <div class="pet-card-footer">
