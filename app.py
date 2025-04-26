@@ -161,27 +161,41 @@ def allowed_file(filename):
 
 # Function to save uploaded image and return the file path
 def save_pet_image(file):
+    """Save uploaded pet image and return the file path"""
     if file and allowed_file(file.filename):
-        # Generate a unique filename with UUID to prevent overwriting
-        original_filename = secure_filename(file.filename)
-        file_extension = original_filename.rsplit('.', 1)[1].lower()
-        unique_filename = f"{uuid.uuid4().hex}.{file_extension}"
-        
-        # Save the original file
-        file_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
-        file.save(file_path)
-        
-        # Create a thumbnail version (optional for performance)
         try:
-            with Image.open(file_path) as img:
-                # Keep aspect ratio, max dimension 800px
-                img.thumbnail((800, 800))
-                img.save(file_path)
+            # Generate a unique filename with UUID to prevent overwriting
+            original_filename = secure_filename(file.filename)
+            file_extension = original_filename.rsplit('.', 1)[1].lower()
+            unique_filename = f"{uuid.uuid4().hex}.{file_extension}"
+            
+            # Ensure upload folder exists
+            os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+            
+            # Full path to save the file
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
+            
+            # Save the original file
+            file.save(file_path)
+            logging.info(f"Saved image to {file_path}")
+            
+            # Create a thumbnail version (optional for performance)
+            try:
+                with Image.open(file_path) as img:
+                    # Keep aspect ratio, max dimension 800px
+                    img.thumbnail((800, 800))
+                    img.save(file_path)
+                    logging.info(f"Created thumbnail for {file_path}")
+            except Exception as e:
+                logging.error(f"Error creating thumbnail: {e}")
+            
+            # Return the relative path for storage in the database
+            relative_path = os.path.join('uploads', unique_filename).replace('\\', '/')
+            logging.info(f"Returning image path: {relative_path}")
+            return relative_path
         except Exception as e:
-            logging.error(f"Error creating thumbnail: {e}")
-        
-        # Return the relative path for storage in the database
-        return os.path.join('uploads', unique_filename).replace('\\', '/')
+            logging.error(f"Error saving pet image: {e}")
+            
     return None
 
 # Try to migrate data from JSON to database if needed
@@ -237,7 +251,7 @@ def edit_pet(pet_id):
     """Edit pet information"""
     pet = get_pet_by_id(pet_id)
     if not pet:
-        flash('Pet not found', 'error')
+        flash('Pet not found ❌', 'error')
         return redirect(url_for('index'))
     
     if request.method == 'POST':
@@ -252,7 +266,7 @@ def edit_pet(pet_id):
         
         # Validate required fields
         if not name or not species:
-            flash('Name and species are required', 'error')
+            flash('Name and species are required ❌', 'error')
             return render_template('edit_pet.html', pet=pet)
         
         # Convert age to integer if provided
@@ -267,10 +281,15 @@ def edit_pet(pet_id):
         if 'image' in request.files:
             file = request.files['image']
             if file.filename:
-                image_url = save_pet_image(file)
+                logging.info(f"Processing uploaded image for {pet.name}: {file.filename}")
+                
+                # Save the image and get the relative path
+                relative_path = save_pet_image(file)
+                
                 # Make image_url relative to static folder for displaying in templates
-                if image_url and not image_url.startswith('http'):
-                    image_url = f"/static/{image_url}"
+                if relative_path:
+                    image_url = f"/static/{relative_path}"
+                    logging.info(f"New image URL for {pet.name}: {image_url}")
         
         # Update pet information
         with app.app_context():
@@ -287,12 +306,14 @@ def edit_pet(pet_id):
                 
                 db.session.commit()
                 
-                flash('Pet information updated successfully', 'success')
+                # Success message with emoji
+                flash(f'Pet {pet.name} updated successfully 🐾✨', 'success')
+                logging.info(f"Pet updated: {pet.name} (ID: {pet.id}, Image: {image_url})")
                 return redirect(url_for('pet_profile', pet_id=pet.id))
             except Exception as e:
                 db.session.rollback()
                 logging.error(f"Error updating pet: {e}")
-                flash('Error updating pet information. Please try again.', 'error')
+                flash(f'Error updating pet {pet.name}. Please try again. ❌', 'error')
     
     # GET request - show the form with pet data
     return render_template('edit_pet.html', pet=pet)
@@ -302,16 +323,21 @@ def delete_pet(pet_id):
     """Delete a pet"""
     pet = get_pet_by_id(pet_id)
     if not pet:
-        flash('Pet not found', 'error')
+        flash('Pet not found ❌', 'error')
         return redirect(url_for('index'))
     
-    with app.app_context():
-        try:
-            # First delete all related records
+    pet_name = pet.name
+    
+    try:
+        # First delete all related records
+        with app.app_context():
+            # Delete pet updates
             PetUpdate.query.filter_by(pet_id=pet.id).delete()
             
-            # Delete checklist completions for this pet's checklists
+            # Get all checklists for this pet
             checklists = Checklist.query.filter_by(pet_id=pet.id).all()
+            
+            # Delete checklist completions for each checklist
             for checklist in checklists:
                 ChecklistCompletion.query.filter_by(checklist_id=checklist.id).delete()
             
@@ -322,11 +348,13 @@ def delete_pet(pet_id):
             db.session.delete(pet)
             db.session.commit()
             
-            flash('Pet deleted successfully', 'success')
-        except Exception as e:
-            db.session.rollback()
-            logging.error(f"Error deleting pet: {e}")
-            flash('Error deleting pet. Please try again.', 'error')
+            # Success message with emoji
+            flash(f'Pet {pet_name} has been deleted successfully 🐾✨', 'success')
+            logging.info(f"Pet {pet_name} (ID: {pet_id}) successfully deleted")
+    except Exception as e:
+        db.session.rollback()
+        logging.error(f"Error deleting pet: {e}")
+        flash(f'Error deleting pet {pet_name}. Please try again. ❌', 'error')
     
     return redirect(url_for('index'))
 
@@ -382,7 +410,7 @@ def add_pet():
         
         # Validate required fields
         if not name or not species:
-            flash('Name and species are required', 'error')
+            flash('Name and species are required ❌', 'error')
             return render_template('add_pet.html')
         
         # Convert age to integer if provided
@@ -397,10 +425,15 @@ def add_pet():
         if 'image' in request.files:
             file = request.files['image']
             if file.filename:
-                image_url = save_pet_image(file)
+                logging.info(f"Processing uploaded image: {file.filename}")
+                
+                # Save the image and get the relative path
+                relative_path = save_pet_image(file)
+                
                 # Make image_url relative to static folder for displaying in templates
-                if image_url and not image_url.startswith('http'):
-                    image_url = f"/static/{image_url}"
+                if relative_path:
+                    image_url = f"/static/{relative_path}"
+                    logging.info(f"Image URL to save in database: {image_url}")
         
         # Create and save the new pet
         with app.app_context():
@@ -419,12 +452,14 @@ def add_pet():
                 db.session.add(pet)
                 db.session.commit()
                 
-                flash('Pet added successfully', 'success')
+                # Success message with emoji
+                flash(f'Pet {name} added successfully 🐾✨', 'success')
+                logging.info(f"New pet added: {name} (ID: {pet.id}, Image: {image_url})")
                 return redirect(url_for('pet_profile', pet_id=pet.id))
             except Exception as e:
                 db.session.rollback()
                 logging.error(f"Error adding pet: {e}")
-                flash('Error adding pet. Please try again.', 'error')
+                flash('Error adding pet. Please try again. ❌', 'error')
     
     # GET request - show the form
     return render_template('add_pet.html')
