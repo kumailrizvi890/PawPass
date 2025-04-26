@@ -65,6 +65,24 @@ header h1 {
   margin: 0;
 }
 
+.logo-link {
+  display: flex;
+  align-items: center;
+}
+
+.header-logo {
+  width: 40px;
+  height: 40px;
+  margin-right: 10px;
+  border-radius: 50%;
+  background-color: white;
+  padding: 2px;
+}
+
+.logo-text {
+  font-weight: 600;
+}
+
 /* Navigation */
 nav {
   display: flex;
@@ -81,6 +99,20 @@ nav button {
   font-size: 0.9rem;
   display: flex;
   align-items: center;
+}
+
+#install-button {
+  background-color: var(--accent-color);
+  border-radius: var(--border-radius);
+  padding: 8px 12px;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+#install-button:hover {
+  background-color: #c78700;
+  transform: translateY(-2px);
 }
 
 nav button svg {
