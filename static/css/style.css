@@ -36,7 +36,14 @@ body {
   background-color: var(--background-color);
   color: var(--text-color);
   line-height: 1.6;
-  padding-bottom: var(--spacing-xl);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+  margin-bottom: var(--spacing-lg);
 }
 
 .container {
@@ -46,12 +53,16 @@ body {
   padding: 0 var(--spacing-md);
 }
 
+/* Navbar styles */
 header {
   background-color: var(--primary-color);
   color: white;
   padding: var(--spacing-md) 0;
   margin-bottom: var(--spacing-lg);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 header .container {
@@ -68,6 +79,7 @@ header h1 {
 .logo-link {
   display: flex;
   align-items: center;
+  text-decoration: none;
 }
 
 .header-logo {
@@ -81,6 +93,7 @@ header h1 {
 
 .logo-text {
   font-weight: 600;
+  color: white;
 }
 
 /* Navigation */
@@ -120,9 +133,6 @@ nav button svg {
 }
 
 /* Main content */
-main {
-  margin-top: var(--spacing-lg);
-}
 
 h2, h3, h4 {
   margin-bottom: var(--spacing-md);
@@ -429,4 +439,86 @@ textarea {
 .empty-state svg {
   margin-bottom: var(--spacing-md);
   opacity: 0.5;
+}
+
+/* Footer styles */
+.site-footer {
+  background-color: var(--tertiary-accent);
+  color: white;
+  padding: var(--spacing-lg) 0;
+  margin-top: auto;
+}
+
+.footer-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.footer-logo {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+}
+
+.footer-logo-img {
+  width: 40px;
+  height: 40px;
+  margin-right: 10px;
+  border-radius: 50%;
+  background-color: white;
+  padding: 2px;
+}
+
+.footer-logo-text {
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+
+.footer-info {
+  margin-bottom: var(--spacing-md);
+}
+
+.footer-info p {
+  margin-bottom: var(--spacing-sm);
+}
+
+.footer-links {
+  display: flex;
+  gap: var(--spacing-lg);
+}
+
+.footer-links a {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  transition: opacity 0.2s;
+}
+
+.footer-links a:hover {
+  opacity: 0.8;
+}
+
+@media (min-width: 768px) {
+  .footer-content {
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: left;
+  }
+  
+  .footer-logo, .footer-info {
+    margin-bottom: 0;
+  }
+}
+
+/* Button for deleting pets */
+.btn-danger {
+  background-color: var(--danger-color);
+  color: white;
+}
+
+.btn-danger:hover {
+  background-color: #b32c2c;
+  transform: translateY(-2px);
 }
