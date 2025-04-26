@@ -17,8 +17,8 @@
         </div>
     </div>
     <div class="hero-image-container">
-        <!-- This can be a photo of a dog similar to the one in the reference image -->
-        <img src="{{ url_for('static', filename='images/hero-dog.jpg') }}" alt="Happy dog" class="hero-image">
+        <!-- Spline 3D Animation -->
+        <iframe class="spline-animation" src="https://my.spline.design/untitled-0728f787-2d27-4263-9a50-758a2827ba6f/" frameborder="0" allowfullscreen></iframe>
     </div>
 </div>
 
@@ -103,16 +103,18 @@
     
     .hero-image-container {
         margin-top: 30px;
-        height: 300px;
+        height: 350px;
         overflow: hidden;
         border-radius: var(--border-radius);
+        position: relative;
     }
     
-    .hero-image {
+    .spline-animation {
         width: 100%;
         height: 100%;
-        object-fit: cover;
-        object-position: center;
+        border: none;
+        border-radius: var(--border-radius);
+        background-color: transparent;
     }
     
     /* Features Section */
