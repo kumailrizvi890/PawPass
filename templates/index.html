@@ -30,7 +30,11 @@
             <div class="card pet-card">
                 <div class="pet-card-image">
                     {% if pet.image_url %}
-                        <img src="{{ pet.image_url }}" alt="{{ pet.name }}">
+                        {% if pet.image_url.startswith('http') %}
+                            <img src="{{ pet.image_url }}" alt="{{ pet.name }}">
+                        {% else %}
+                            <img src="{{ pet.image_url }}" alt="{{ pet.name }}">
+                        {% endif %}
                     {% else %}
                         <div class="placeholder-image">{{ pet.name[0] }}</div>
                     {% endif %}
