@@ -170,10 +170,11 @@ def save_pet_image(file):
             unique_filename = f"{uuid.uuid4().hex}.{file_extension}"
             
             # Ensure upload folder exists
-            os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+            upload_dir = os.path.join('static', 'uploads')
+            os.makedirs(upload_dir, exist_ok=True)
             
-            # Full path to save the file
-            file_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
+            # Full path to save the file (relative to the app root)
+            file_path = os.path.join(upload_dir, unique_filename)
             
             # Save the original file
             file.save(file_path)
@@ -189,8 +190,8 @@ def save_pet_image(file):
             except Exception as e:
                 logging.error(f"Error creating thumbnail: {e}")
             
-            # Return the relative path for storage in the database
-            relative_path = os.path.join('uploads', unique_filename).replace('\\', '/')
+            # Return the relative path for storage in the database (without 'static/' prefix)
+            relative_path = f"uploads/{unique_filename}"
             logging.info(f"Returning image path: {relative_path}")
             return relative_path
         except Exception as e:
@@ -249,51 +250,60 @@ def pet_profile(pet_id):
 @app.route('/pet/<int:pet_id>/edit', methods=['GET', 'POST'])
 def edit_pet(pet_id):
     """Edit pet information"""
-    pet = get_pet_by_id(pet_id)
-    if not pet:
-        flash('Pet not found ❌', 'error')
-        return redirect(url_for('index'))
+    logging.info(f"Editing pet with ID: {pet_id}")
     
-    if request.method == 'POST':
-        # Get form data
-        name = request.form.get('name')
-        species = request.form.get('species')
-        breed = request.form.get('breed', '')
-        age = request.form.get('age', None)
-        gender = request.form.get('gender', '')
-        description = request.form.get('description', '')
-        is_emergency = 'is_emergency' in request.form
+    with app.app_context():
+        # Get the pet by ID directly
+        pet = Pet.query.get(pet_id)
         
-        # Validate required fields
-        if not name or not species:
-            flash('Name and species are required ❌', 'error')
-            return render_template('edit_pet.html', pet=pet)
+        if not pet:
+            flash('Pet not found ❌', 'error')
+            return redirect(url_for('index'))
         
-        # Convert age to integer if provided
-        if age:
+        pet_name = pet.name
+        logging.info(f"Found pet: {pet_name} (ID: {pet_id}) for editing")
+    
+        if request.method == 'POST':
+            # Get form data
+            name = request.form.get('name')
+            species = request.form.get('species')
+            breed = request.form.get('breed', '')
+            age = request.form.get('age', None)
+            gender = request.form.get('gender', '')
+            description = request.form.get('description', '')
+            is_emergency = 'is_emergency' in request.form
+            
+            logging.info(f"Form data: name={name}, species={species}, breed={breed}, age={age}, gender={gender}, is_emergency={is_emergency}")
+            
+            # Validate required fields
+            if not name or not species:
+                flash('Name and species are required ❌', 'error')
+                return render_template('edit_pet.html', pet=pet)
+            
+            # Convert age to integer if provided
+            if age:
+                try:
+                    age = int(age)
+                except ValueError:
+                    age = None
+            
+            # Process image upload
+            image_url = pet.image_url
+            if 'image' in request.files:
+                file = request.files['image']
+                if file.filename:
+                    logging.info(f"Processing uploaded image for {pet_name}: {file.filename}")
+                    
+                    # Save the image and get the relative path
+                    relative_path = save_pet_image(file)
+                    
+                    # Set image URL for the database
+                    if relative_path:
+                        image_url = f"/{relative_path}"
+                        logging.info(f"New image URL for {pet_name}: {image_url}")
+            
             try:
-                age = int(age)
-            except ValueError:
-                age = None
-        
-        # Process image upload
-        image_url = pet.image_url
-        if 'image' in request.files:
-            file = request.files['image']
-            if file.filename:
-                logging.info(f"Processing uploaded image for {pet.name}: {file.filename}")
-                
-                # Save the image and get the relative path
-                relative_path = save_pet_image(file)
-                
-                # Make image_url relative to static folder for displaying in templates
-                if relative_path:
-                    image_url = f"/static/{relative_path}"
-                    logging.info(f"New image URL for {pet.name}: {image_url}")
-        
-        # Update pet information
-        with app.app_context():
-            try:
+                # Update pet information
                 pet.name = name
                 pet.species = species
                 pet.breed = breed
@@ -307,42 +317,49 @@ def edit_pet(pet_id):
                 db.session.commit()
                 
                 # Success message with emoji
-                flash(f'Pet {pet.name} updated successfully 🐾✨', 'success')
-                logging.info(f"Pet updated: {pet.name} (ID: {pet.id}, Image: {image_url})")
-                return redirect(url_for('pet_profile', pet_id=pet.id))
+                flash(f'Pet {name} has been updated successfully 🐾✨', 'success')
+                logging.info(f"Pet updated: {name} (ID: {pet_id}, Image: {image_url})")
+                return redirect(url_for('pet_profile', pet_id=pet_id))
             except Exception as e:
                 db.session.rollback()
                 logging.error(f"Error updating pet: {e}")
-                flash(f'Error updating pet {pet.name}. Please try again. ❌', 'error')
+                flash(f'Error updating pet {pet_name}. Please try again. ❌', 'error')
     
-    # GET request - show the form with pet data
-    return render_template('edit_pet.html', pet=pet)
+        # GET request - show the form with pet data
+        return render_template('edit_pet.html', pet=pet)
 
 @app.route('/pet/<int:pet_id>/delete', methods=['POST'])
 def delete_pet(pet_id):
     """Delete a pet"""
-    pet = get_pet_by_id(pet_id)
-    if not pet:
-        flash('Pet not found ❌', 'error')
-        return redirect(url_for('index'))
+    logging.info(f"Deleting pet with ID: {pet_id}")
     
-    pet_name = pet.name
-    
-    try:
-        # First delete all related records
-        with app.app_context():
+    with app.app_context():
+        # Get the pet by ID directly
+        pet = Pet.query.get(pet_id)
+        
+        if not pet:
+            flash('Pet not found ❌', 'error')
+            return redirect(url_for('index'))
+        
+        pet_name = pet.name
+        logging.info(f"Found pet: {pet_name} (ID: {pet_id})")
+        
+        try:
             # Delete pet updates
-            PetUpdate.query.filter_by(pet_id=pet.id).delete()
+            update_count = PetUpdate.query.filter_by(pet_id=pet.id).delete()
+            logging.info(f"Deleted {update_count} updates for pet {pet_name}")
             
             # Get all checklists for this pet
             checklists = Checklist.query.filter_by(pet_id=pet.id).all()
             
             # Delete checklist completions for each checklist
             for checklist in checklists:
-                ChecklistCompletion.query.filter_by(checklist_id=checklist.id).delete()
+                completion_count = ChecklistCompletion.query.filter_by(checklist_id=checklist.id).delete()
+                logging.info(f"Deleted {completion_count} checklist completions for checklist {checklist.id}")
             
             # Delete checklists
-            Checklist.query.filter_by(pet_id=pet.id).delete()
+            checklist_count = Checklist.query.filter_by(pet_id=pet.id).delete()
+            logging.info(f"Deleted {checklist_count} checklists for pet {pet_name}")
             
             # Delete the pet
             db.session.delete(pet)
@@ -351,10 +368,11 @@ def delete_pet(pet_id):
             # Success message with emoji
             flash(f'Pet {pet_name} has been deleted successfully 🐾✨', 'success')
             logging.info(f"Pet {pet_name} (ID: {pet_id}) successfully deleted")
-    except Exception as e:
-        db.session.rollback()
-        logging.error(f"Error deleting pet: {e}")
-        flash(f'Error deleting pet {pet_name}. Please try again. ❌', 'error')
+            
+        except Exception as e:
+            db.session.rollback()
+            logging.error(f"Error deleting pet: {e}")
+            flash(f'Error deleting pet {pet_name}. Please try again. ❌', 'error')
     
     return redirect(url_for('index'))
 
@@ -430,9 +448,9 @@ def add_pet():
                 # Save the image and get the relative path
                 relative_path = save_pet_image(file)
                 
-                # Make image_url relative to static folder for displaying in templates
+                # Set image URL for the database
                 if relative_path:
-                    image_url = f"/static/{relative_path}"
+                    image_url = f"/{relative_path}"
                     logging.info(f"Image URL to save in database: {image_url}")
         
         # Create and save the new pet
