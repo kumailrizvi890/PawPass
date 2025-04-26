@@ -213,16 +213,21 @@ def home():
 def pet_center():
     """Pet Care Center - displays list of all pets"""
     search_query = request.args.get('search', '').strip()
+    logging.info(f"Search query: '{search_query}'")
     
     with app.app_context():
         if search_query:
-            # Search for pets by name
+            # Search for pets by name (case-insensitive)
             pets = Pet.query.filter(Pet.name.ilike(f'%{search_query}%')).all()
+            logging.info(f"Found {len(pets)} pets matching search: '{search_query}'")
+            for pet in pets:
+                logging.info(f"  - Pet match: {pet.id}, {pet.name}")
         else:
             # Get all pets
             pets = Pet.query.all()
+            logging.info(f"No search query, showing all {len(pets)} pets")
     
-    return render_template('index.html', pets=pets)
+    return render_template('index.html', pets=pets, search_query=search_query)
 
 # Legacy route for backward compatibility
 @app.route('/index')

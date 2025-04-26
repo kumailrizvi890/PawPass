@@ -64,8 +64,16 @@
             <path d="M7 6a5 5 0 0 0 10 0"></path>
             <path d="M7 18a5 5 0 0 1 10 0"></path>
         </svg>
-        <h3>No Pets Available</h3>
-        <p>There are currently no pets in the system.</p>
+        {% if search_query %}
+            <h3>No Pets Found</h3>
+            <p>No pets found matching "{{ search_query }}". Try a different search term.</p>
+            <a href="{{ url_for('pet_center') }}" class="btn btn-primary mt-3">
+                <i class="fas fa-arrow-left"></i> Show All Pets
+            </a>
+        {% else %}
+            <h3>No Pets Available</h3>
+            <p>There are currently no pets in the system.</p>
+        {% endif %}
     </div>
 {% endif %}
 {% endblock %}
