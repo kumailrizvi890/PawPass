@@ -1,0 +1,74 @@
+[
+  {
+    "id": 1,
+    "name": "Luna",
+    "image": "https://images.unsplash.com/photo-1543852786-1cf6624b9987",
+    "species": "Cat",
+    "feeding_instructions": "Feed twice a day, morning and evening. 1/2 cup of dry food each meal.",
+    "medical_notes": "Allergy meds once daily in the morning. Pill can be hidden in treat.",
+    "behavior_notes": "Shy, hides at first but friendly once comfortable. Loves string toys.",
+    "updates": [
+      {"date": "2023-06-15", "time": "09:00", "note": "Fed at 9am. Hiding under bed."},
+      {"date": "2023-06-15", "time": "18:30", "note": "Took meds. Ate all food. Played for 10 minutes."}
+    ],
+    "checklists": [
+      {
+        "date": "2023-06-15",
+        "time": "18:00",
+        "fed": true,
+        "meds": true,
+        "water": true,
+        "playtime": true,
+        "notes": "All tasks completed"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Max",
+    "image": "https://images.unsplash.com/photo-1534351450181-ea9f78427fe8",
+    "species": "Dog",
+    "feeding_instructions": "Feed three times a day. 1 cup of kibble mixed with 1/4 can wet food.",
+    "medical_notes": "No current medications. Due for vaccines next month.",
+    "behavior_notes": "Very energetic. Needs at least 30 minutes of exercise daily. Good with other dogs.",
+    "updates": [
+      {"date": "2023-06-14", "time": "08:30", "note": "Morning walk for 20 minutes. Fed breakfast."},
+      {"date": "2023-06-14", "time": "17:00", "note": "Afternoon play session in yard. Very energetic today."}
+    ],
+    "checklists": [
+      {
+        "date": "2023-06-14",
+        "time": "21:00",
+        "fed": true,
+        "meds": false,
+        "water": true,
+        "playtime": true,
+        "notes": "No meds needed"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "name": "Bella",
+    "image": "https://images.unsplash.com/photo-1537151608828-ea2b11777ee8",
+    "species": "Dog",
+    "feeding_instructions": "Feed twice daily. Special diet for sensitive stomach.",
+    "medical_notes": "Eye drops twice daily. Heart medication in the morning.",
+    "behavior_notes": "Senior dog, gentle and calm. Prefers short walks and lots of naps.",
+    "updates": [
+      {"date": "2023-06-15", "time": "10:00", "note": "Morning meds given. Ate about half her breakfast."},
+      {"date": "2023-06-15", "time": "15:30", "note": "Short walk around the block. Seems a bit tired today."}
+    ],
+    "checklists": [
+      {
+        "date": "2023-06-15",
+        "time": "20:00",
+        "fed": true,
+        "meds": true,
+        "water": true,
+        "playtime": false,
+        "notes": "Too tired for playtime today, extra rest recommended"
+      }
+    ]
+  }
+]

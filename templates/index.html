@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}PawPass - Pet List{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Pet Care Center</h2>
+    <p>Select a pet to view profile, add updates, or complete shift checklists.</p>
+</div>
+
+{% if pets %}
+    <div class="pets-grid">
+        {% for pet in pets %}
+            <div class="card pet-card">
+                <div class="pet-card-image">
+                    <img src="{{ pet.image }}" alt="{{ pet.name }}">
+                </div>
+                <div class="pet-card-content">
+                    <h3>{{ pet.name }}</h3>
+                    <p><strong>Species:</strong> {{ pet.species }}</p>
+                    
+                    {% if pet.updates %}
+                        <p><strong>Last update:</strong> {{ pet.updates[0].date }} at {{ pet.updates[0].time }}</p>
+                    {% else %}
+                        <p><strong>Last update:</strong> No updates yet</p>
+                    {% endif %}
+                </div>
+                <div class="pet-card-footer">
+                    <a href="{{ url_for('pet_profile', pet_id=pet.id) }}" class="btn btn-primary btn-block">
+                        <i class="fas fa-paw"></i> View Profile
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="empty-state">
+        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10 22h4"></path>
+            <path d="M2 15h20"></path>
+            <path d="M2 9h20"></path>
+            <path d="M10 2h4"></path>
+            <path d="M7 6a5 5 0 0 0 10 0"></path>
+            <path d="M7 18a5 5 0 0 1 10 0"></path>
+        </svg>
+        <h3>No Pets Available</h3>
+        <p>There are currently no pets in the system.</p>
+    </div>
+{% endif %}
+{% endblock %}

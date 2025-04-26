@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Update for {{ pet.name }} - PawPass{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <a href="{{ url_for('pet_profile', pet_id=pet.id) }}" class="btn btn-outline">
+        <i class="fas fa-arrow-left"></i> Back to Profile
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h3>Add Update for {{ pet.name }}</h3>
+    </div>
+    <div class="card-body">
+        <form id="update-form" method="POST" action="{{ url_for('add_update', pet_id=pet.id) }}">
+            <div class="form-group">
+                <label for="update-text">Update Note:</label>
+                <textarea id="update-text" name="update" rows="5" placeholder="Enter your update about {{ pet.name }} here..." required></textarea>
+                <p class="form-hint">Include any important information about feeding, behavior, medical observations, etc.</p>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Submit Update
+                </button>
+                <a href="{{ url_for('pet_profile', pet_id=pet.id) }}" class="btn btn-outline">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h3>Pet Information</h3>
+    </div>
+    <div class="card-body">
+        <div class="pet-info-section">
+            <h4>Feeding Instructions</h4>
+            <p>{{ pet.feeding_instructions }}</p>
+        </div>
+        <div class="pet-info-section">
+            <h4>Medical Notes</h4>
+            <p>{{ pet.medical_notes }}</p>
+        </div>
+        <div class="pet-info-section">
+            <h4>Behavior Notes</h4>
+            <p>{{ pet.behavior_notes }}</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ pet.name }} - PawPass{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <a href="{{ url_for('index') }}" class="btn btn-outline">
+        <i class="fas fa-arrow-left"></i> Back to Pet List
+    </a>
+</div>
+
+<div class="pet-profile-header">
+    <div class="pet-profile-image">
+        <img src="{{ pet.image }}" alt="{{ pet.name }}">
+    </div>
+    <div class="pet-profile-info">
+        <h2>{{ pet.name }}</h2>
+        <p><strong>Species:</strong> {{ pet.species }}</p>
+        
+        <div class="pet-profile-actions">
+            <a href="{{ url_for('add_update', pet_id=pet.id) }}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Add Update
+            </a>
+            <a href="{{ url_for('complete_checklist', pet_id=pet.id) }}" class="btn btn-secondary">
+                <i class="fas fa-tasks"></i> Complete Checklist
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="pet-info-section">
+        <h3><i class="fas fa-utensils"></i> Feeding Instructions</h3>
+        <p>{{ pet.feeding_instructions }}</p>
+    </div>
+
+    <div class="pet-info-section">
+        <h3><i class="fas fa-pills"></i> Medical Notes</h3>
+        <p>{{ pet.medical_notes }}</p>
+    </div>
+
+    <div class="pet-info-section">
+        <h3><i class="fas fa-heart"></i> Behavior Notes</h3>
+        <p>{{ pet.behavior_notes }}</p>
+    </div>
+</div>
+
+<!-- Updates -->
+<div class="card">
+    <div class="card-header">
+        <h3><i class="fas fa-clipboard"></i> Recent Updates</h3>
+    </div>
+    <div class="card-body">
+        {% if pet.updates %}
+            <ul class="update-list">
+                {% for update in pet.updates %}
+                    <li class="update-item">
+                        <span class="update-date">{{ update.date }} at {{ update.time }}</span>
+                        {{ update.note }}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <div class="empty-state">
+                <p>No updates have been added yet.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Checklists -->
+<div class="card">
+    <div class="card-header">
+        <h3><i class="fas fa-tasks"></i> Recent Checklists</h3>
+    </div>
+    <div class="card-body">
+        {% if pet.checklists %}
+            <ul class="checklist-list">
+                {% for checklist in pet.checklists %}
+                    <li class="checklist-item">
+                        <span class="checklist-date">{{ checklist.date }} at {{ checklist.time }}</span>
+                        <div class="checklist-details">
+                            <span class="{{ 'checklist-completed' if checklist.fed else 'checklist-incomplete' }}">
+                                Fed
+                            </span> | 
+                            <span class="{{ 'checklist-completed' if checklist.meds else 'checklist-incomplete' }}">
+                                Meds
+                            </span> | 
+                            <span class="{{ 'checklist-completed' if checklist.water else 'checklist-incomplete' }}">
+                                Water
+                            </span> | 
+                            <span class="{{ 'checklist-completed' if checklist.playtime else 'checklist-incomplete' }}">
+                                Playtime
+                            </span>
+                        </div>
+                        {% if checklist.notes %}
+                            <div class="checklist-notes">
+                                <strong>Notes:</strong> {{ checklist.notes }}
+                            </div>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <div class="empty-state">
+                <p>No checklists have been completed yet.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
