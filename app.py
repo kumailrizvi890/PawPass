@@ -232,6 +232,104 @@ def pet_profile(pet_id):
         flash('Pet not found', 'error')
         return redirect(url_for('index'))
 
+@app.route('/pet/<int:pet_id>/edit', methods=['GET', 'POST'])
+def edit_pet(pet_id):
+    """Edit pet information"""
+    pet = get_pet_by_id(pet_id)
+    if not pet:
+        flash('Pet not found', 'error')
+        return redirect(url_for('index'))
+    
+    if request.method == 'POST':
+        # Get form data
+        name = request.form.get('name')
+        species = request.form.get('species')
+        breed = request.form.get('breed', '')
+        age = request.form.get('age', None)
+        gender = request.form.get('gender', '')
+        description = request.form.get('description', '')
+        is_emergency = 'is_emergency' in request.form
+        
+        # Validate required fields
+        if not name or not species:
+            flash('Name and species are required', 'error')
+            return render_template('edit_pet.html', pet=pet)
+        
+        # Convert age to integer if provided
+        if age:
+            try:
+                age = int(age)
+            except ValueError:
+                age = None
+        
+        # Process image upload
+        image_url = pet.image_url
+        if 'image' in request.files:
+            file = request.files['image']
+            if file.filename:
+                image_url = save_pet_image(file)
+                # Make image_url relative to static folder for displaying in templates
+                if image_url and not image_url.startswith('http'):
+                    image_url = f"/static/{image_url}"
+        
+        # Update pet information
+        with app.app_context():
+            try:
+                pet.name = name
+                pet.species = species
+                pet.breed = breed
+                pet.age = age
+                pet.gender = gender
+                pet.description = description
+                pet.image_url = image_url
+                pet.is_emergency = is_emergency
+                pet.updated_at = datetime.utcnow()
+                
+                db.session.commit()
+                
+                flash('Pet information updated successfully', 'success')
+                return redirect(url_for('pet_profile', pet_id=pet.id))
+            except Exception as e:
+                db.session.rollback()
+                logging.error(f"Error updating pet: {e}")
+                flash('Error updating pet information. Please try again.', 'error')
+    
+    # GET request - show the form with pet data
+    return render_template('edit_pet.html', pet=pet)
+
+@app.route('/pet/<int:pet_id>/delete', methods=['POST'])
+def delete_pet(pet_id):
+    """Delete a pet"""
+    pet = get_pet_by_id(pet_id)
+    if not pet:
+        flash('Pet not found', 'error')
+        return redirect(url_for('index'))
+    
+    with app.app_context():
+        try:
+            # First delete all related records
+            PetUpdate.query.filter_by(pet_id=pet.id).delete()
+            
+            # Delete checklist completions for this pet's checklists
+            checklists = Checklist.query.filter_by(pet_id=pet.id).all()
+            for checklist in checklists:
+                ChecklistCompletion.query.filter_by(checklist_id=checklist.id).delete()
+            
+            # Delete checklists
+            Checklist.query.filter_by(pet_id=pet.id).delete()
+            
+            # Delete the pet
+            db.session.delete(pet)
+            db.session.commit()
+            
+            flash('Pet deleted successfully', 'success')
+        except Exception as e:
+            db.session.rollback()
+            logging.error(f"Error deleting pet: {e}")
+            flash('Error deleting pet. Please try again.', 'error')
+    
+    return redirect(url_for('index'))
+
 @app.route('/pet/<int:pet_id>/update', methods=['GET', 'POST'])
 def add_update(pet_id):
     """Add update page"""
