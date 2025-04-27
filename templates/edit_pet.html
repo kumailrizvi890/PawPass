@@ -61,6 +61,16 @@
             </div>
             
             <div class="form-group">
+                <label for="feeding_instructions">Feeding Instructions</label>
+                <textarea id="feeding_instructions" name="feeding_instructions" class="form-control" rows="3" placeholder="Enter detailed feeding instructions, including type of food, quantity, and feeding schedule.">{{ pet.feeding_instructions or '' }}</textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="medical_notes">Medical Notes</label>
+                <textarea id="medical_notes" name="medical_notes" class="form-control" rows="3" placeholder="Enter any medical conditions, medication requirements, or health concerns.">{{ pet.medical_notes or '' }}</textarea>
+            </div>
+            
+            <div class="form-group">
                 <label for="image">Current Photo</label>
                 {% if pet.image_url %}
                 <div class="current-image">

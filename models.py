@@ -18,6 +18,8 @@ class Pet(db.Model):
     description = db.Column(db.Text, nullable=True)
     image_url = db.Column(db.String(255), nullable=True)
     is_emergency = db.Column(db.Boolean, default=False)
+    feeding_instructions = db.Column(db.Text, nullable=True)
+    medical_notes = db.Column(db.Text, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
