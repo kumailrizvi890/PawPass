@@ -411,15 +411,19 @@ def add_update(pet_id):
     if request.method == 'POST':
         update_text = request.form.get('update')
         if update_text:
-            now = datetime.now()
+            # Get Pacific Time
+            import pytz
+            pacific_tz = pytz.timezone('America/Los_Angeles')
+            now_utc = datetime.utcnow()
+            now_pacific = now_utc.replace(tzinfo=pytz.utc).astimezone(pacific_tz)
             
-            # Create and save a new update
+            # Create and save a new update using Pacific time
             with app.app_context():
                 new_update = PetUpdate(
                     pet_id=pet.id,
                     update_text=update_text,
-                    update_date=now.date(),
-                    update_time=now.time(),
+                    update_date=now_pacific.date(),
+                    update_time=now_pacific.time(),
                     volunteer_name=request.form.get('volunteer_name', '')
                 )
                 
@@ -521,15 +525,20 @@ def complete_checklist(pet_id):
     if request.method == 'POST':
         notes = request.form.get('notes', '')
         volunteer_name = request.form.get('volunteer_name', '')
-        now = datetime.now()
+        
+        # Get Pacific Time
+        import pytz
+        pacific_tz = pytz.timezone('America/Los_Angeles')
+        now_utc = datetime.utcnow()
+        now_pacific = now_utc.replace(tzinfo=pytz.utc).astimezone(pacific_tz)
         
         with app.app_context():
             # Create the checklist
             checklist = Checklist(
                 pet_id=pet.id,
                 volunteer_name=volunteer_name,
-                completion_date=now.date(),
-                completion_time=now.time(),
+                completion_date=now_pacific.date(),
+                completion_time=now_pacific.time(),
                 notes=notes
             )
             
@@ -644,12 +653,17 @@ def api_add_update(pet_id):
             return jsonify({"error": "Pet not found"}), 404
         
         try:
-            now = datetime.now()
+            # Get Pacific Time
+            import pytz
+            pacific_tz = pytz.timezone('America/Los_Angeles')
+            now_utc = datetime.utcnow()
+            now_pacific = now_utc.replace(tzinfo=pytz.utc).astimezone(pacific_tz)
+            
             new_update = PetUpdate(
                 pet_id=pet.id,
                 update_text=update_text,
-                update_date=now.date(),
-                update_time=now.time(),
+                update_date=now_pacific.date(),
+                update_time=now_pacific.time(),
                 volunteer_name=volunteer_name
             )
             
