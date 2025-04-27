@@ -740,6 +740,46 @@ def api_complete_checklist(pet_id):
             logging.error(f"Error adding checklist via API: {e}")
             return jsonify({"error": str(e)}), 500
 
+# Chatbot routes
+@app.route('/chatbot-page')
+def chatbot_page():
+    """Chatbot page with AI assistant for pet care"""
+    return render_template('chatbot.html')
+
+@app.route('/chatbot', methods=['POST'])
+def chatbot():
+    """API endpoint for chatbot responses"""
+    if not request.is_json:
+        return jsonify({"error": "Invalid request format"}), 400
+    
+    # Get user message
+    data = request.get_json()
+    user_message = data.get('message')
+    
+    if not user_message:
+        return jsonify({"error": "No message provided"}), 400
+    
+    try:
+        # Process with AI
+        from pawpass.ai.pet_ai import AIService
+        ai_service = AIService()
+        
+        # Format the prompt for pet care context
+        prompt = f"""As a pet care expert, please answer this question from a shelter volunteer or pet owner:
+        
+        "{user_message}"
+        
+        Provide a helpful, concise response with practical advice. Focus on pet care best practices.
+        """
+        
+        # Get the response
+        result = ai_service.process_text(prompt)
+        return jsonify(result)
+        
+    except Exception as e:
+        logging.error(f"Error getting chatbot response: {e}")
+        return jsonify({"error": str(e)}), 500
+
 # Error handlers
 @app.errorhandler(404)
 def page_not_found(e):

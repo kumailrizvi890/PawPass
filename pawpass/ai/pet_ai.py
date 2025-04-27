@@ -5,15 +5,14 @@ import os
 import json
 import logging
 from enum import Enum
-from openai import OpenAI
+import google.generativeai as genai
 
 # Setup logging
 logger = logging.getLogger(__name__)
 
 class AIProvider(Enum):
     """AI service provider options"""
-    OPENAI = "openai"
-    AZURE = "azure"
+    GEMINI = "gemini"
     MOCK = "mock"  # For development/testing
 
 class AIService:
@@ -21,17 +20,18 @@ class AIService:
     
     def __init__(self):
         """Initialize the AI service with configuration from environment variables"""
-        self.api_key = os.environ.get("OPENAI_API_KEY")
+        self.api_key = os.environ.get("GOOGLE_API_KEY") or "AIzaSyDpNepFSAbJ832pxUH_qpmDBsjpXaw1K2c"
         self.client = None
         
-        # Initialize OpenAI client if API key is available
+        # Initialize Gemini client if API key is available
         if self.api_key:
-            self.client = OpenAI(api_key=self.api_key)
-            self.provider = AIProvider.OPENAI
-            logger.info("Initialized AI service with OpenAI provider")
+            genai.configure(api_key=self.api_key)
+            self.model = genai.GenerativeModel('gemini-pro')
+            self.provider = AIProvider.GEMINI
+            logger.info("Initialized AI service with Gemini provider")
         else:
             self.provider = AIProvider.MOCK
-            logger.warning("No OpenAI API key found. Using mock AI provider")
+            logger.warning("No Gemini API key found. Using mock AI provider")
     
     def process_text(self, prompt):
         """
@@ -46,7 +46,7 @@ class AIService:
         try:
             if self.provider == AIProvider.MOCK:
                 return {
-                    "text": "AI analysis not available. Please configure OpenAI API key.",
+                    "text": "AI analysis not available. Please configure Gemini API key.",
                     "is_mock": True
                 }
             
@@ -55,21 +55,19 @@ class AIService:
             config = ModelConfig.get_config(ModelType.RECOMMENDATION)
             
             # Make API call
-            logger.info(f"Making OpenAI API call with model: {config['model_name']}")
-            response = self.client.chat.completions.create(
-                model=config['model_name'],
-                messages=[
-                    {"role": "system", "content": "You are a pet care assistant providing concise, helpful information for animal shelter volunteers and foster caregivers."},
-                    {"role": "user", "content": prompt}
-                ],
-                temperature=config['temperature'],
-                max_tokens=config['max_tokens']
+            logger.info("Making Gemini API call")
+            response = self.model.generate_content(
+                prompt,
+                generation_config={
+                    "temperature": config['temperature'],
+                    "max_output_tokens": config['max_tokens'],
+                }
             )
             
             # Process response
             result = {
-                "text": response.choices[0].message.content,
-                "model": config['model_name'],
+                "text": response.text,
+                "model": "gemini-pro",
                 "is_mock": False
             }
             
@@ -97,7 +95,7 @@ class AIService:
         try:
             if self.provider == AIProvider.MOCK:
                 return {
-                    "text": f"Care instructions for {species} ({care_type}) not available. Please configure OpenAI API key.",
+                    "text": f"Care instructions for {species} ({care_type}) not available. Please configure Gemini API key.",
                     "is_mock": True
                 }
             

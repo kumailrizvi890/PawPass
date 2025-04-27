@@ -159,6 +159,9 @@ def care_instructions(pet_id):
 def enhanced_checklist(pet_id):
     """Enhanced checklist page with clickable buttons and more options"""
     from app import get_pet_by_id
+    from datetime import datetime
+    from models import Checklist, ChecklistCompletion
+    
     pet = get_pet_by_id(pet_id)
     if not pet:
         flash('Pet not found', 'error')
@@ -191,27 +194,61 @@ def enhanced_checklist(pet_id):
     # For POST request, handle form submission
     if request.method == 'POST':
         try:
-            # Get the form data
-            completed_items = []
-            for key, value in request.form.items():
-                if key.startswith('item_'):
-                    item_id = int(key.split('_')[1])
-                    item_value = value.strip()
-                    completed_items.append({
-                        'id': item_id,
-                        'value': item_value,
-                        'notes': request.form.get(f'notes_{item_id}', '')
-                    })
-            
+            # Get form data
             volunteer_name = request.form.get('volunteer_name', '')
             general_notes = request.form.get('general_notes', '')
             
-            # TODO: Save the enhanced checklist to database
-            # For now, just flash a success message
-            flash(f'Enhanced checklist completed with {len(completed_items)} items', 'success')
+            # Get Pacific Time
+            from datetime import datetime, timedelta
+            import pytz
+            pacific_tz = pytz.timezone('America/Los_Angeles')
+            now_utc = datetime.utcnow()
+            now_pacific = now_utc.replace(tzinfo=pytz.utc).astimezone(pacific_tz)
+            
+            # Create the checklist record
+            checklist = Checklist(
+                pet_id=pet.id,
+                volunteer_name=volunteer_name,
+                completion_date=now_pacific.date(),
+                completion_time=now_pacific.time(),
+                notes=general_notes
+            )
+            db.session.add(checklist)
+            db.session.flush()  # To get the checklist ID
+            
+            # Process completed items
+            completed_count = 0
+            for key, value in request.form.items():
+                if key.startswith('item_') and value.strip():
+                    item_id = int(key.split('_')[1])
+                    item_value = value.strip()
+                    item_notes = request.form.get(f'notes_{item_id}', '')
+                    measurement = request.form.get(f'measurement_{item_id}', '')
+                    
+                    # Combine value and measurement if present
+                    if measurement:
+                        item_value = f"{item_value} - {measurement}"
+                    
+                    # Create checklist completion
+                    completion = ChecklistCompletion(
+                        checklist_id=checklist.id,
+                        checklist_item_id=item_id,
+                        completed=True,
+                        value=item_value,
+                        notes=item_notes
+                    )
+                    db.session.add(completion)
+                    completed_count += 1
+            
+            # Commit the transaction
+            db.session.commit()
+            
+            # Success message
+            flash(f'Enhanced checklist completed with {completed_count} items for {pet.name}!', 'success')
             return redirect(url_for('pet_profile', pet_id=pet_id))
             
         except Exception as e:
+            db.session.rollback()
             logger.error(f"Error completing enhanced checklist: {e}")
             flash('Error completing checklist. Please try again.', 'error')
     
