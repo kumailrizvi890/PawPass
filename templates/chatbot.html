@@ -15,10 +15,19 @@
   
   .chat-message {
     margin-bottom: 20px;
-    padding: 12px 18px;
+    padding: 12px 18px 12px 40px;
     border-radius: 18px;
     max-width: 80%;
     position: relative;
+  }
+  
+  .chat-message::before {
+    position: absolute;
+    left: 10px;
+    top: 14px;
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    font-size: 18px;
   }
   
   .user-message {
@@ -28,11 +37,21 @@
     border-bottom-right-radius: 5px;
   }
   
+  .user-message::before {
+    content: "\f007"; /* User icon */
+    color: rgba(255, 255, 255, 0.8);
+  }
+  
   .bot-message {
     background-color: #f1f1f1;
     color: #333;
     margin-right: auto;
     border-bottom-left-radius: 5px;
+  }
+  
+  .bot-message::before {
+    content: "\f1b0"; /* Paw icon */
+    color: var(--primary-color);
   }
   
   .bot-message p {
@@ -47,6 +66,11 @@
   .bot-message h4 {
     margin: 15px 0 5px;
     font-size: 1.1rem;
+    color: var(--primary-color);
+  }
+  
+  /* Colorblind mode adjustments for icons */
+  body.colorblind-mode .bot-message::before {
     color: var(--primary-color);
   }
   
@@ -226,17 +250,36 @@
     gap: 5px;
     padding: 5px 10px;
     font-size: 0.85rem;
-    background-color: rgba(255, 255, 255, 0.85);
+    background-color: var(--accent-color);
+    color: white;
     border: none;
   }
   
   #new-chat-button:hover {
-    background-color: white;
+    background-color: var(--tertiary-accent);
     transform: translateY(-2px);
   }
   
   #new-chat-button i {
     font-size: 1rem;
+  }
+  
+  /* Header color and card header adjustments */
+  .card-header {
+    background-color: var(--primary-color);
+  }
+  
+  /* Colorblind mode adjustments for header and new chat button */
+  body.colorblind-mode .card-header {
+    background-color: var(--primary-color);
+  }
+  
+  body.colorblind-mode #new-chat-button {
+    background-color: var(--accent-color);
+  }
+  
+  body.colorblind-mode #new-chat-button:hover {
+    background-color: var(--tertiary-accent);
   }
 </style>
 {% endblock %}
@@ -246,13 +289,13 @@
   <div class="row">
     <div class="col-lg-8 mx-auto">
       <div class="card">
-        <div class="card-header bg-primary text-white">
+        <div class="card-header text-white">
           <div class="d-flex justify-content-between align-items-center">
             <h3 class="mb-0">
               <i class="fas fa-comments"></i> 
               PawPass AI Pet Care Assistant
             </h3>
-            <button id="new-chat-button" class="btn btn-sm btn-light" title="Start a new chat">
+            <button id="new-chat-button" title="Start a new chat">
               <i class="fas fa-plus-circle"></i> New Chat
             </button>
           </div>
