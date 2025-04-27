@@ -35,7 +35,7 @@ else:
     logging.error("DATABASE_URL environment variable not found")
 
 # Initialize database
-from models import db, Pet, PetUpdate, Checklist, ChecklistItem, ChecklistCompletion
+from models import db, Pet, PetUpdate, Checklist, ChecklistItem, ChecklistCompletion, WeightRecord, EnhancedChecklistItem
 db.init_app(app)
 
 # Create all tables
@@ -54,6 +54,10 @@ with app.app_context():
         for item in default_items:
             db.session.add(item)
         db.session.commit()
+    
+    # Import and add enhanced checklist items
+    from app_utils import create_default_enhanced_checklist_items
+    create_default_enhanced_checklist_items(db, EnhancedChecklistItem)
 
 # Data storage path (for migration/fallback)
 PETS_DATA_FILE = os.path.join(os.path.dirname(__file__), 'static', 'data', 'pets.json')
