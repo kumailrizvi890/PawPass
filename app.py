@@ -897,13 +897,28 @@ def chatbot():
             pet_database_info=pet_info if pet_info else ""
         )
         
+        # Log the prompt for debugging
+        logging.info(f"Sending prompt to AI service: {prompt[:100]}...")
+        
         # Get the response
         result = ai_service.process_text(prompt)
+        
+        # Check if there's an error in the result
+        if "error" in result:
+            logging.error(f"Error from AI service: {result.get('error')}")
+            return jsonify({
+                "text": "I'm having trouble connecting to my knowledge base right now. Could you please try again in a moment?",
+                "is_mock": False
+            })
+            
         return jsonify(result)
         
     except Exception as e:
         logging.error(f"Error getting chatbot response: {e}")
-        return jsonify({"error": str(e)}), 500
+        return jsonify({
+            "text": "Sorry, I encountered an unexpected error. Please try again with a different question.",
+            "error": str(e)
+        }), 500
 
 # Error handlers
 @app.errorhandler(404)

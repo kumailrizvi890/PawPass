@@ -20,19 +20,24 @@ class AIService:
     
     def __init__(self):
         """Initialize the AI service with configuration from environment variables"""
-        # Check both possible environment variable names for the API key
-        self.api_key = os.environ.get("GOOGLE_API_KEY") or os.environ.get("OPENAI_API_KEY") or "AIzaSyDpNepFSAbJ832pxUH_qpmDBsjpXaw1K2c"
-        logging.info(f"Using API key starting with: {self.api_key[:5]}...")
+        # Get the API key from environment variables
+        self.api_key = os.environ.get("GOOGLE_API_KEY")
+        
+        if self.api_key:
+            logging.info(f"Using Google API key: {self.api_key[:5]}...")
+        else:
+            logging.warning("No Google API key found.")
+            
         self.client = None
         
         # Initialize Gemini client if API key is available
         if self.api_key:
-            genai.configure(api_key=self.api_key)
             try:
+                genai.configure(api_key=self.api_key)
                 # Using gemini-1.5-pro which is the currently supported model
                 self.model = genai.GenerativeModel('gemini-1.5-pro')
                 self.provider = AIProvider.GEMINI
-                logger.info("Initialized AI service with Gemini provider")
+                logger.info("Successfully initialized AI service with Gemini provider")
             except Exception as e:
                 logger.error(f"Failed to initialize Gemini model: {e}")
                 # Fallback to mock provider
@@ -54,17 +59,33 @@ class AIService:
         """
         try:
             if self.provider == AIProvider.MOCK:
+                logger.warning("Using mock provider instead of real AI service")
                 return {
                     "text": "AI analysis not available. Please configure Gemini API key.",
                     "is_mock": True
+                }
+            
+            # Check API key again
+            if not self.api_key:
+                logger.error("API key is missing when trying to process text")
+                return {
+                    "error": "API key is missing",
+                    "text": "The AI service is not properly configured. Please contact support.",
+                    "is_mock": False
                 }
             
             # Get config
             from pawpass.ai.model_config import ModelType, ModelConfig
             config = ModelConfig.get_config(ModelType.RECOMMENDATION)
             
-            # Make API call
-            logger.info("Making Gemini API call")
+            # Make API call - add extra debug logging
+            logger.info(f"Making Gemini API call with API key starting with: {self.api_key[:5]}...")
+            logger.debug(f"Sending prompt (first 100 chars): {prompt[:100]}...")
+            
+            # Initialize model again in case of any issues
+            genai.configure(api_key=self.api_key)
+            self.model = genai.GenerativeModel('gemini-1.5-pro')
+            
             response = self.model.generate_content(
                 prompt,
                 generation_config={
@@ -73,6 +94,15 @@ class AIService:
                 }
             )
             
+            # Check if response is valid
+            if not response or not hasattr(response, 'text'):
+                logger.error(f"Invalid response from Gemini: {response}")
+                return {
+                    "error": "Invalid response from AI service",
+                    "text": "I received an incomplete response. Please try again.",
+                    "is_mock": False
+                }
+            
             # Process response
             result = {
                 "text": response.text,
@@ -80,13 +110,19 @@ class AIService:
                 "is_mock": False
             }
             
+            logger.info("Successfully processed AI request")
+            logger.debug(f"AI response (first 100 chars): {response.text[:100]}...")
+            
             return result
             
         except Exception as e:
             logger.error(f"Error processing text with AI: {e}")
+            import traceback
+            logger.error(f"Traceback: {traceback.format_exc()}")
+            
             return {
                 "error": str(e),
-                "text": "Error analyzing text. Please try again later.",
+                "text": "I encountered an error while processing your question. Please try again with a different question.",
                 "is_mock": False
             }
     
