@@ -15,6 +15,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize PWA install functionality
     initPwaInstall();
+    
+    // Initialize paw print background
+    initPawBackground();
 });
 
 // Color-blind mode toggle
@@ -202,6 +205,43 @@ function installPwa() {
             installButton.style.display = 'none';
         }
     });
+}
+
+// Initialize paw prints background
+function initPawBackground() {
+    const container = document.querySelector('.paw-bg-container');
+    if (!container) return;
+    
+    // Create multiple paw prints with different sizes, rotations, and positions
+    const pawCount = 15; // Number of paw prints to create
+    
+    for (let i = 0; i < pawCount; i++) {
+        createPawPrint(container);
+    }
+}
+
+// Create a single paw print with random properties
+function createPawPrint(container) {
+    const pawPrint = document.createElement('div');
+    pawPrint.className = 'paw-print';
+    
+    // Random size between 40px and 120px
+    const size = Math.floor(Math.random() * 80) + 40;
+    pawPrint.style.width = `${size}px`;
+    pawPrint.style.height = `${size}px`;
+    
+    // Random position
+    const xPos = Math.floor(Math.random() * 95); // 0-95% of the container width
+    const yPos = Math.floor(Math.random() * 95); // 0-95% of the container height
+    pawPrint.style.left = `${xPos}%`;
+    pawPrint.style.top = `${yPos}%`;
+    
+    // Random rotation (0-360 degrees)
+    const rotation = Math.floor(Math.random() * 360);
+    pawPrint.style.transform = `rotate(${rotation}deg)`;
+    
+    // Add to container
+    container.appendChild(pawPrint);
 }
 
 // Offline data handling

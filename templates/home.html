@@ -64,19 +64,47 @@
 
 <div class="chatbot-section">
     <div class="chatbot-content">
-        <div class="chatbot-icon">
-            <i class="fas fa-robot"></i>
+        <div class="chatbot-header">
+            <div class="chatbot-icon">
+                <i class="fas fa-robot"></i>
+            </div>
+            <h2>Meet Your AI Pet Care Assistant</h2>
+            <p class="chatbot-tagline">Your 24/7 companion for all pet care questions!</p>
         </div>
-        <h2>Meet Your AI Pet Care Assistant</h2>
-        <p>Have questions about pet care? Need guidance with feeding, medication, or behaviors? Our intelligent chatbot is here to help!</p>
-        <ul class="chatbot-features">
-            <li><i class="fas fa-check-circle"></i> Get instant answers to pet care questions</li>
-            <li><i class="fas fa-check-circle"></i> Access detailed information about pets in the system</li>
-            <li><i class="fas fa-check-circle"></i> Learn who worked with specific animals</li>
-            <li><i class="fas fa-check-circle"></i> Receive evidence-based pet care advice</li>
-        </ul>
+        
+        <div class="chatbot-demo">
+            <div class="chatbot-demo-messages">
+                <div class="chatbot-demo-message user">
+                    <i class="fas fa-user message-icon"></i>
+                    <div class="message-bubble">Who took care of Bella yesterday?</div>
+                </div>
+                <div class="chatbot-demo-message bot">
+                    <i class="fas fa-paw message-icon"></i>
+                    <div class="message-bubble">Bella was cared for by Sarah on April 26th. She completed feeding, medication, and playtime activities.</div>
+                </div>
+                <div class="chatbot-demo-message user">
+                    <i class="fas fa-user message-icon"></i>
+                    <div class="message-bubble">What should I feed a kitten?</div>
+                </div>
+                <div class="chatbot-demo-message bot">
+                    <i class="fas fa-paw message-icon"></i>
+                    <div class="message-bubble">Kittens need specially formulated kitten food high in protein. Feed 3-4 times daily until 6 months old.</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="chatbot-benefits">
+            <h3>How can our AI assistant help you?</h3>
+            <ul class="chatbot-features">
+                <li><i class="fas fa-check-circle"></i> Get instant answers to pet care questions</li>
+                <li><i class="fas fa-check-circle"></i> Access detailed information about pets in the system</li>
+                <li><i class="fas fa-check-circle"></i> Learn who worked with specific animals</li>
+                <li><i class="fas fa-check-circle"></i> Receive evidence-based pet care advice</li>
+            </ul>
+        </div>
+        
         <a href="{{ url_for('chatbot_page') }}" class="btn btn-primary btn-lg chatbot-btn">
-            <i class="fas fa-comments"></i> Try the Pet Care Chatbot
+            <i class="fas fa-comments"></i> Chat With Your Pet Care Assistant Now
         </a>
     </div>
 </div>
