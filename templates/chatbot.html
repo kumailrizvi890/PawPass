@@ -217,6 +217,27 @@
   @keyframes spinner-border {
     to { transform: rotate(360deg); }
   }
+  
+  /* New chat button styling */
+  #new-chat-button {
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    font-size: 0.85rem;
+    background-color: rgba(255, 255, 255, 0.85);
+    border: none;
+  }
+  
+  #new-chat-button:hover {
+    background-color: white;
+    transform: translateY(-2px);
+  }
+  
+  #new-chat-button i {
+    font-size: 1rem;
+  }
 </style>
 {% endblock %}
 
@@ -226,10 +247,15 @@
     <div class="col-lg-8 mx-auto">
       <div class="card">
         <div class="card-header bg-primary text-white">
-          <h3 class="mb-0">
-            <i class="fas fa-comments"></i> 
-            PawPass AI Pet Care Assistant
-          </h3>
+          <div class="d-flex justify-content-between align-items-center">
+            <h3 class="mb-0">
+              <i class="fas fa-comments"></i> 
+              PawPass AI Pet Care Assistant
+            </h3>
+            <button id="new-chat-button" class="btn btn-sm btn-light" title="Start a new chat">
+              <i class="fas fa-plus-circle"></i> New Chat
+            </button>
+          </div>
         </div>
         
         <div class="chat-container" id="chat-container">
@@ -288,6 +314,13 @@
     const userInput = document.getElementById('user-input');
     const chatContainer = document.getElementById('chat-container');
     const loadingIndicator = document.getElementById('loading-indicator');
+    const newChatButton = document.getElementById('new-chat-button');
+    
+    // Handle new chat button click
+    newChatButton.addEventListener('click', function() {
+      // Reload the page to start a new chat
+      window.location.reload();
+    });
     
     // Handle chat form submission
     chatForm.addEventListener('submit', function(e) {
