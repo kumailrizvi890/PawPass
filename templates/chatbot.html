@@ -15,19 +15,24 @@
   
   .chat-message {
     margin-bottom: 20px;
-    padding: 12px 18px 12px 40px;
+    padding: 12px 18px 12px 18px;
     border-radius: 18px;
     max-width: 80%;
     position: relative;
+    display: flex;
   }
   
-  .chat-message::before {
-    position: absolute;
-    left: 10px;
-    top: 14px;
-    font-family: "Font Awesome 5 Free";
-    font-weight: 900;
-    font-size: 18px;
+  .message-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    margin-right: 10px;
+    flex-shrink: 0;
+  }
+  
+  .message-content {
+    flex-grow: 1;
   }
   
   .user-message {
@@ -37,8 +42,7 @@
     border-bottom-right-radius: 5px;
   }
   
-  .user-message::before {
-    content: "\f007"; /* User icon */
+  .user-message .message-icon {
     color: rgba(255, 255, 255, 0.8);
   }
   
@@ -49,8 +53,7 @@
     border-bottom-left-radius: 5px;
   }
   
-  .bot-message::before {
-    content: "\f1b0"; /* Paw icon */
+  .bot-message .message-icon {
     color: var(--primary-color);
   }
   
@@ -304,9 +307,14 @@
         <div class="chat-container" id="chat-container">
           <!-- Bot welcome message -->
           <div class="chat-message bot-message">
-            <p>👋 Hi there! I'm the PawPass Pet Care Assistant. I can help you with pet care advice, answer questions about animal health, behavior, and more.</p>
-            <p>What would you like to know today?</p>
-            <div class="message-time">{{ now().strftime('%I:%M %p') }} PT</div>
+            <div class="message-icon">
+              <i class="fas fa-paw"></i>
+            </div>
+            <div class="message-content">
+              <p>👋 Hi there! I'm the PawPass Pet Care Assistant. I can help you with pet care advice, answer questions about animal health, behavior, and more.</p>
+              <p>What would you like to know today?</p>
+              <div class="message-time">{{ now().strftime('%I:%M %p') }} PT</div>
+            </div>
           </div>
           
           <!-- Quick suggestion chips -->
@@ -389,8 +397,13 @@
       const messageElement = document.createElement('div');
       messageElement.className = 'chat-message user-message';
       messageElement.innerHTML = `
-        <p>${escapeHtml(message)}</p>
-        <div class="message-time">${pacificTime} PT</div>
+        <div class="message-icon">
+          <i class="fas fa-user"></i>
+        </div>
+        <div class="message-content">
+          <p>${escapeHtml(message)}</p>
+          <div class="message-time">${pacificTime} PT</div>
+        </div>
       `;
       chatContainer.appendChild(messageElement);
       scrollToBottom();
@@ -411,8 +424,13 @@
       const messageElement = document.createElement('div');
       messageElement.className = 'chat-message bot-message';
       messageElement.innerHTML = `
-        ${formattedMessage}
-        <div class="message-time">${pacificTime} PT</div>
+        <div class="message-icon">
+          <i class="fas fa-paw"></i>
+        </div>
+        <div class="message-content">
+          ${formattedMessage}
+          <div class="message-time">${pacificTime} PT</div>
+        </div>
       `;
       chatContainer.appendChild(messageElement);
       scrollToBottom();
