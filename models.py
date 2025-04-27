@@ -24,6 +24,8 @@ class Pet(db.Model):
     # Relationships
     updates = relationship("PetUpdate", back_populates="pet", cascade="all, delete-orphan")
     checklists = relationship("Checklist", back_populates="pet", cascade="all, delete-orphan")
+    # Defer relationship to avoid circular dependencies
+    # The pet-weight relationship will be set at the bottom of this file
 
     def __repr__(self):
         return f"<Pet {self.name}>"
@@ -92,6 +94,8 @@ class ChecklistCompletion(db.Model):
     checklist_id = db.Column(db.Integer, ForeignKey('checklists.id', ondelete='CASCADE'), nullable=False)
     checklist_item_id = db.Column(db.Integer, ForeignKey('checklist_items.id'), nullable=False)
     completed = db.Column(db.Boolean, default=True)
+    value = db.Column(db.String(255), nullable=True)  # To store additional info like water intake amount, etc.
+    notes = db.Column(db.Text, nullable=True)  # For any additional observations
     
     # Relationships
     checklist = relationship("Checklist", back_populates="completed_items")
@@ -99,3 +103,45 @@ class ChecklistCompletion(db.Model):
     
     def __repr__(self):
         return f"<ChecklistCompletion {self.id} for Checklist {self.checklist_id}>"
+
+
+class WeightRecord(db.Model):
+    """Model for tracking pet weight over time"""
+    __tablename__ = 'weight_records'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    pet_id = db.Column(db.Integer, ForeignKey('pets.id', ondelete='CASCADE'), nullable=False)
+    weight = db.Column(db.Float, nullable=False)  # Weight in kilograms
+    record_date = db.Column(db.Date, nullable=False)
+    record_time = db.Column(db.Time, nullable=False)
+    volunteer_name = db.Column(db.String(100), nullable=True)
+    notes = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # Relationship
+    pet = relationship("Pet", back_populates="weight_records")
+    
+    def __repr__(self):
+        return f"<WeightRecord {self.id} for Pet {self.pet_id}: {self.weight}kg>"
+
+
+class EnhancedChecklistItem(db.Model):
+    """Model for enhanced checklist items with specific types"""
+    __tablename__ = 'enhanced_checklist_items'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    description = db.Column(db.String(255), nullable=False)
+    item_type = db.Column(db.String(50), nullable=False)  # medication, feeding, water, litter, etc.
+    is_default = db.Column(db.Boolean, default=False)
+    species_applicable = db.Column(db.String(50), nullable=True)
+    options = db.Column(db.Text, nullable=True)  # JSON string of options for selection items
+    unit = db.Column(db.String(20), nullable=True)  # e.g., ml, g, etc. for measurement items
+    frequency = db.Column(db.String(50), nullable=True)  # daily, twice daily, etc.
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    def __repr__(self):
+        return f"<EnhancedChecklistItem {self.description} ({self.item_type})>"
+
+
+# Add the relationship after all classes are defined to avoid circular dependencies
+Pet.weight_records = relationship("WeightRecord", back_populates="pet", cascade="all, delete-orphan")
