@@ -20,15 +20,24 @@ class AIService:
     
     def __init__(self):
         """Initialize the AI service with configuration from environment variables"""
-        self.api_key = os.environ.get("GOOGLE_API_KEY") or "AIzaSyDpNepFSAbJ832pxUH_qpmDBsjpXaw1K2c"
+        # Check both possible environment variable names for the API key
+        self.api_key = os.environ.get("GOOGLE_API_KEY") or os.environ.get("OPENAI_API_KEY") or "AIzaSyDpNepFSAbJ832pxUH_qpmDBsjpXaw1K2c"
+        logging.info(f"Using API key starting with: {self.api_key[:5]}...")
         self.client = None
         
         # Initialize Gemini client if API key is available
         if self.api_key:
             genai.configure(api_key=self.api_key)
-            self.model = genai.GenerativeModel('gemini-pro')
-            self.provider = AIProvider.GEMINI
-            logger.info("Initialized AI service with Gemini provider")
+            try:
+                # Using gemini-1.5-pro which is the currently supported model
+                self.model = genai.GenerativeModel('gemini-1.5-pro')
+                self.provider = AIProvider.GEMINI
+                logger.info("Initialized AI service with Gemini provider")
+            except Exception as e:
+                logger.error(f"Failed to initialize Gemini model: {e}")
+                # Fallback to mock provider
+                self.provider = AIProvider.MOCK
+                logger.warning("Using mock AI provider as fallback")
         else:
             self.provider = AIProvider.MOCK
             logger.warning("No Gemini API key found. Using mock AI provider")
@@ -67,7 +76,7 @@ class AIService:
             # Process response
             result = {
                 "text": response.text,
-                "model": "gemini-pro",
+                "model": "gemini-1.5-pro",
                 "is_mock": False
             }
             

@@ -584,6 +584,8 @@ def complete_checklist(pet_id):
                         at_least_one_checked = True
                         
                         # Create a dynamic item based on the selection
+                        item_text = ""  # Default empty value to fix the unbound variable warning
+                        
                         if item_value == 'feeding_dry':
                             amount = request.form.get('feeding_dry_amount', '')
                             item_text = f"Dry food: {amount}" if amount else "Dry food"
@@ -604,6 +606,9 @@ def complete_checklist(pet_id):
                                 item_text = "Medication given"
                         elif item_value == 'litter_clean':
                             item_text = "Cleaned litter box/living area"
+                        else:
+                            # Fallback for any other checkboxes
+                            item_text = f"Completed: {item_value}"
                         
                         # Find or create a checklist item for this
                         dynamic_item = ChecklistItem.query.filter_by(description=item_text).first()

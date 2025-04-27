@@ -15,23 +15,23 @@ class ModelConfig:
     
     DEFAULT_CONFIGS = {
         ModelType.NLP: {
-            "model_name": "gemini-pro",
+            "model_name": "gemini-1.5-pro",
             "temperature": 0.0,
             "max_tokens": 150,
             "dimensions": 1536
         },
         ModelType.RECOMMENDATION: {
-            "model_name": "gemini-pro",
+            "model_name": "gemini-1.5-pro",
             "temperature": 0.3,
             "max_tokens": 500
         },
         ModelType.BEHAVIOR: {
-            "model_name": "gemini-pro",
+            "model_name": "gemini-1.5-pro",
             "temperature": 0.1,
             "max_tokens": 1000
         },
         ModelType.IMAGE: {
-            "model_name": "gemini-pro-vision",
+            "model_name": "gemini-1.5-pro",
             "size": "1024x1024",
             "quality": "standard",
             "style": "natural"
