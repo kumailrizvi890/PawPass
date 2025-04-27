@@ -68,6 +68,16 @@
         <h3><i class="fas fa-heart"></i> Description</h3>
         <p>{{ pet.description or "No description available." }}</p>
     </div>
+    
+    <div class="pet-info-section">
+        <h3><i class="fas fa-utensils"></i> Feeding Instructions</h3>
+        <p>{{ pet.feeding_instructions or "No feeding instructions available." }}</p>
+    </div>
+    
+    <div class="pet-info-section">
+        <h3><i class="fas fa-notes-medical"></i> Medical Notes</h3>
+        <p>{{ pet.medical_notes or "No medical notes available." }}</p>
+    </div>
 </div>
 
 <!-- Updates -->

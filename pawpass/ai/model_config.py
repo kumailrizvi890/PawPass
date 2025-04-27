@@ -62,6 +62,19 @@ class ModelConfig:
         {weight_records}
         """,
         
+        "chatbot_response": """
+        As a pet care expert for the PawPass animal shelter management system, please answer this question from a shelter volunteer or pet owner:
+        
+        "{user_message}"
+        
+        {pet_database_info}
+        
+        Provide a helpful, concise response with practical advice. Focus on pet care best practices.
+        If the question is about a specific pet in our database, provide relevant information about that pet including their feeding instructions and medical notes if available.
+        If the question is about general pet care, provide evidence-based advice.
+        Keep your response friendly and professional.
+        """,
+        
         "care_instructions": {
             "feeding": """
             Provide evidence-based feeding guidelines for a {species}. Include information on:

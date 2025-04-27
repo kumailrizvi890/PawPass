@@ -336,6 +336,10 @@ def edit_pet(pet_id):
                         logging.info(f"New image URL for {pet_name}: {image_url}")
             
             try:
+                # Get the new fields
+                feeding_instructions = request.form.get('feeding_instructions', '')
+                medical_notes = request.form.get('medical_notes', '')
+                
                 # Update pet information
                 pet.name = name
                 pet.species = species
@@ -345,6 +349,8 @@ def edit_pet(pet_id):
                 pet.description = description
                 pet.image_url = image_url
                 pet.is_emergency = is_emergency
+                pet.feeding_instructions = feeding_instructions
+                pet.medical_notes = medical_notes
                 pet.updated_at = datetime.utcnow()
                 
                 db.session.commit()
@@ -461,6 +467,8 @@ def add_pet():
         age = request.form.get('age', None)
         gender = request.form.get('gender', '')
         description = request.form.get('description', '')
+        feeding_instructions = request.form.get('feeding_instructions', '')
+        medical_notes = request.form.get('medical_notes', '')
         is_emergency = 'is_emergency' in request.form
         
         # Validate required fields
@@ -500,6 +508,8 @@ def add_pet():
                     age=age,
                     gender=gender,
                     description=description,
+                    feeding_instructions=feeding_instructions,
+                    medical_notes=medical_notes,
                     image_url=image_url,
                     is_emergency=is_emergency
                 )
@@ -686,6 +696,8 @@ def pet_to_json(pet):
             "age": pet.age,
             "gender": pet.gender,
             "description": pet.description,
+            "feeding_instructions": pet.feeding_instructions,
+            "medical_notes": pet.medical_notes,
             "image_url": pet.image_url,
             "is_emergency": pet.is_emergency,
             "updates": updates,
@@ -858,13 +870,32 @@ def chatbot():
         from pawpass.ai.pet_ai import AIService
         ai_service = AIService()
         
-        # Format the prompt for pet care context
-        prompt = f"""As a pet care expert, please answer this question from a shelter volunteer or pet owner:
+        # Check if the message is asking about specific pets
+        pet_info = ""
+        with app.app_context():
+            # Get a list of all pets in the database for context
+            pets = Pet.query.all()
+            if pets:
+                pet_info = "Here is information about our current pets:\n"
+                for pet in pets:
+                    pet_info += f"- {pet.name}: {pet.species}"
+                    if pet.breed:
+                        pet_info += f", {pet.breed}"
+                    if pet.age:
+                        pet_info += f", {pet.age} years old"
+                    if pet.feeding_instructions:
+                        pet_info += f". Feeding: {pet.feeding_instructions[:50]}..." if len(pet.feeding_instructions) > 50 else f". Feeding: {pet.feeding_instructions}"
+                    if pet.medical_notes:
+                        pet_info += f". Medical notes: {pet.medical_notes[:50]}..." if len(pet.medical_notes) > 50 else f". Medical notes: {pet.medical_notes}"
+                    pet_info += "\n"
         
-        "{user_message}"
-        
-        Provide a helpful, concise response with practical advice. Focus on pet care best practices.
-        """
+        # Use the template from model_config.py
+        from pawpass.ai.model_config import ModelConfig
+        prompt_template = ModelConfig.get_prompt_template("chatbot_response")
+        prompt = prompt_template.format(
+            user_message=user_message,
+            pet_database_info=pet_info if pet_info else ""
+        )
         
         # Get the response
         result = ai_service.process_text(prompt)
