@@ -40,7 +40,18 @@
                     <h3>{{ pet.name }}</h3>
                     <p><strong>Species:</strong> {{ pet.species }}</p>
                     
-                    <p><strong>Last update:</strong> No updates yet</p>
+                    <p><strong>Last update:</strong> 
+                    {% if pet_last_updates and pet.id in pet_last_updates %}
+                        <span title="{{ pet_last_updates[pet.id].update_text }}">
+                            {{ pet_last_updates[pet.id].update_date.strftime('%m/%d/%Y') }} {{ pet_last_updates[pet.id].update_time.strftime('%I:%M %p') }} PT
+                            {% if pet_last_updates[pet.id].volunteer_name %}
+                            by {{ pet_last_updates[pet.id].volunteer_name }}
+                            {% endif %}
+                        </span>
+                    {% else %}
+                        No updates yet
+                    {% endif %}
+                    </p>
                     
                     {% if pet.is_emergency %}
                         <div class="emergency-badge">Emergency Care</div>

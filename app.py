@@ -243,8 +243,18 @@ def pet_center():
             # Get all pets
             pets = Pet.query.all()
             logging.info(f"No search query, showing all {len(pets)} pets")
+        
+        # Get the latest update for each pet
+        pet_last_updates = {}
+        for pet in pets:
+            latest_update = PetUpdate.query.filter_by(pet_id=pet.id)\
+                .order_by(PetUpdate.update_date.desc(), PetUpdate.update_time.desc())\
+                .first()
+            
+            if latest_update:
+                pet_last_updates[pet.id] = latest_update
     
-    return render_template('index.html', pets=pets, search_query=search_query)
+    return render_template('index.html', pets=pets, search_query=search_query, pet_last_updates=pet_last_updates)
 
 # Legacy route for backward compatibility
 @app.route('/index')
