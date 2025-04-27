@@ -2,6 +2,48 @@
 
 {% block title %}Shift Checklist for {{ pet.name }} - PawPass{% endblock %}
 
+{% block styles %}
+<style>
+    .checkbox-container {
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    
+    .inline-input {
+        width: 120px;
+        margin-left: 10px;
+        padding: 5px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+    
+    .checkbox-group h4 {
+        margin-top: 20px;
+        margin-bottom: 10px;
+        color: #444;
+    }
+    
+    .mt-4 {
+        margin-top: 1.5rem;
+    }
+    
+    .form-hint {
+        color: #666;
+        font-style: italic;
+        margin-bottom: 15px;
+    }
+    
+    /* Make sure checkboxes are more visible */
+    input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        margin-right: 8px;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="page-header">
     <a href="{{ url_for('pet_profile', pet_id=pet.id) }}" class="btn btn-outline">
@@ -17,24 +59,52 @@
         <form id="checklist-form" method="POST" action="{{ url_for('complete_checklist', pet_id=pet.id) }}">
             <div class="checkbox-group">
                 <h4>Care Tasks</h4>
-                <p class="form-hint">Check all tasks that you've completed during your shift.</p>
+                <p class="form-hint">Check at least one task that you've completed during your shift.</p>
                 
+                {% for item in checklist_items %}
                 <div class="checkbox-container">
-                    <input type="checkbox" id="fed" name="fed" value="1">
-                    <label for="fed">Fed {{ pet.name }}</label>
+                    <input type="checkbox" id="item_{{ item.id }}" name="items" value="{{ item.id }}">
+                    <label for="item_{{ item.id }}">{{ item.description }}</label>
+                </div>
+                {% endfor %}
+                
+                <h4 class="mt-4">Feeding</h4>
+                <div class="checkbox-container">
+                    <input type="checkbox" id="fed_dry" name="items" value="feeding_dry">
+                    <label for="fed_dry">Dry food</label>
+                    <input type="text" name="feeding_dry_amount" placeholder="Amount" class="inline-input">
                 </div>
                 <div class="checkbox-container">
-                    <input type="checkbox" id="meds" name="meds" value="1">
-                    <label for="meds">Gave medications (if needed)</label>
+                    <input type="checkbox" id="fed_wet" name="items" value="feeding_wet">
+                    <label for="fed_wet">Wet food</label>
+                    <input type="text" name="feeding_wet_amount" placeholder="Amount" class="inline-input">
                 </div>
+                
+                <h4 class="mt-4">Water</h4>
                 <div class="checkbox-container">
-                    <input type="checkbox" id="water" name="water" value="1">
-                    <label for="water">Refreshed water</label>
+                    <input type="checkbox" id="water_refill" name="items" value="water_refill">
+                    <label for="water_refill">Refilled water</label>
+                    <input type="text" name="water_amount" placeholder="Amount" class="inline-input">
                 </div>
+                
+                <h4 class="mt-4">Medication</h4>
                 <div class="checkbox-container">
-                    <input type="checkbox" id="playtime" name="playtime" value="1">
-                    <label for="playtime">Provided playtime/exercise</label>
+                    <input type="checkbox" id="medication" name="items" value="medication">
+                    <label for="medication">Gave medication</label>
+                    <input type="text" name="medication_name" placeholder="Name" class="inline-input">
+                    <input type="text" name="medication_dose" placeholder="Dose" class="inline-input">
                 </div>
+                
+                <h4 class="mt-4">Litter/Waste</h4>
+                <div class="checkbox-container">
+                    <input type="checkbox" id="litter_clean" name="items" value="litter_clean">
+                    <label for="litter_clean">Cleaned litter box/living area</label>
+                </div>
+            </div>
+            
+            <div class="form-group mt-4">
+                <label for="volunteer_name">Your Name:</label>
+                <input type="text" id="volunteer_name" name="volunteer_name" placeholder="Enter your name">
             </div>
             
             <div class="form-group">

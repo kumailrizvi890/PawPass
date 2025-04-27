@@ -22,6 +22,7 @@ app.register_blueprint(enhanced_features)
 @app.context_processor
 def utility_processor():
     def now():
+        import pytz
         pacific_tz = pytz.timezone('America/Los_Angeles')
         return datetime.utcnow().replace(tzinfo=pytz.utc).astimezone(pacific_tz)
     return {'now': now}
@@ -534,6 +535,14 @@ def complete_checklist(pet_id):
         notes = request.form.get('notes', '')
         volunteer_name = request.form.get('volunteer_name', '')
         
+        # Get form data for checklist items
+        selected_items = request.form.getlist('items')
+        
+        # If no items were selected, show an error
+        if not selected_items:
+            flash('Please check at least one care task before submitting the checklist.', 'error')
+            return render_template('checklist.html', pet=pet, checklist_items=checklist_items)
+        
         # Get Pacific Time
         import pytz
         pacific_tz = pytz.timezone('America/Los_Angeles')
@@ -554,15 +563,68 @@ def complete_checklist(pet_id):
                 db.session.add(checklist)
                 db.session.flush()  # Get the checklist ID
                 
-                # Add checklist completions based on form data
+                # Process standard checklist items 
+                at_least_one_checked = False
                 for item in checklist_items:
-                    is_completed = str(item.id) in request.form.getlist('items')
+                    is_completed = str(item.id) in selected_items
+                    if is_completed:
+                        at_least_one_checked = True
+                    
                     completion = ChecklistCompletion(
                         checklist_id=checklist.id,
                         checklist_item_id=item.id,
                         completed=is_completed
                     )
                     db.session.add(completion)
+                
+                # Process additional items (these are the ones from the enhanced checklist)
+                additional_items = ['feeding_dry', 'feeding_wet', 'water_refill', 'medication', 'litter_clean']
+                for item_value in additional_items:
+                    if item_value in selected_items:
+                        at_least_one_checked = True
+                        
+                        # Create a dynamic item based on the selection
+                        if item_value == 'feeding_dry':
+                            amount = request.form.get('feeding_dry_amount', '')
+                            item_text = f"Dry food: {amount}" if amount else "Dry food"
+                        elif item_value == 'feeding_wet':
+                            amount = request.form.get('feeding_wet_amount', '')
+                            item_text = f"Wet food: {amount}" if amount else "Wet food"
+                        elif item_value == 'water_refill':
+                            amount = request.form.get('water_amount', '')
+                            item_text = f"Water: {amount}" if amount else "Refreshed water"
+                        elif item_value == 'medication':
+                            med_name = request.form.get('medication_name', '')
+                            med_dose = request.form.get('medication_dose', '')
+                            if med_name and med_dose:
+                                item_text = f"Medication: {med_name} ({med_dose})"
+                            elif med_name:
+                                item_text = f"Medication: {med_name}"
+                            else:
+                                item_text = "Medication given"
+                        elif item_value == 'litter_clean':
+                            item_text = "Cleaned litter box/living area"
+                        
+                        # Find or create a checklist item for this
+                        dynamic_item = ChecklistItem.query.filter_by(description=item_text).first()
+                        if not dynamic_item:
+                            dynamic_item = ChecklistItem(description=item_text, is_default=False)
+                            db.session.add(dynamic_item)
+                            db.session.flush()
+                        
+                        # Mark it as completed
+                        completion = ChecklistCompletion(
+                            checklist_id=checklist.id,
+                            checklist_item_id=dynamic_item.id,
+                            completed=True
+                        )
+                        db.session.add(completion)
+                
+                # If nothing was checked, don't allow submission
+                if not at_least_one_checked:
+                    db.session.rollback()
+                    flash('Please check at least one care task before submitting the checklist.', 'error')
+                    return render_template('checklist.html', pet=pet, checklist_items=checklist_items)
                 
                 db.session.commit()
                 flash('Checklist completed successfully', 'success')
