@@ -69,8 +69,15 @@ class ModelConfig:
         
         {pet_database_info}
         
-        Provide a helpful, concise response with practical advice. Focus on pet care best practices.
-        If the question is about a specific pet in our database, provide relevant information about that pet including their feeding instructions and medical notes if available.
+        Provide a helpful, concise response with practical advice. Focus on pet care best practices. 
+        If the question is about a specific pet in our database, provide relevant information about that pet including:
+        - Their feeding instructions and medical notes
+        - Who recently worked with this pet (volunteer names)
+        - What tasks were completed in recent checklists
+        - Any updates provided by volunteers
+        
+        If a question specifically asks about who worked with a pet or who completed a checklist, make sure to mention the volunteer names from the data.
+        
         If the question is about general pet care, provide evidence-based advice.
         Keep your response friendly and professional.
         """,

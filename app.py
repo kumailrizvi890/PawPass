@@ -876,7 +876,7 @@ def chatbot():
             # Get a list of all pets in the database for context
             pets = Pet.query.all()
             if pets:
-                pet_info = "Here is information about our current pets:\n"
+                pet_info = "Here is information about our current pets and their recent care:\n"
                 for pet in pets:
                     pet_info += f"- {pet.name}: {pet.species}"
                     if pet.breed:
@@ -887,6 +887,41 @@ def chatbot():
                         pet_info += f". Feeding: {pet.feeding_instructions[:50]}..." if len(pet.feeding_instructions) > 50 else f". Feeding: {pet.feeding_instructions}"
                     if pet.medical_notes:
                         pet_info += f". Medical notes: {pet.medical_notes[:50]}..." if len(pet.medical_notes) > 50 else f". Medical notes: {pet.medical_notes}"
+                    pet_info += "\n"
+                    
+                    # Add recent updates with volunteer names
+                    recent_updates = PetUpdate.query.filter_by(pet_id=pet.id).order_by(PetUpdate.created_at.desc()).limit(3).all()
+                    if recent_updates:
+                        pet_info += f"  Recent updates for {pet.name}:\n"
+                        for update in recent_updates:
+                            update_date = update.update_date.strftime('%Y-%m-%d')
+                            update_time = update.update_time.strftime('%I:%M %p')
+                            volunteer = update.volunteer_name if update.volunteer_name else "Unknown volunteer"
+                            pet_info += f"  * {update_date} at {update_time} - {volunteer}: {update.update_text[:100]}...\n" if len(update.update_text) > 100 else f"  * {update_date} at {update_time} - {volunteer}: {update.update_text}\n"
+                    
+                    # Add recent checklists with volunteer names
+                    recent_checklists = Checklist.query.filter_by(pet_id=pet.id).order_by(Checklist.completion_date.desc(), Checklist.completion_time.desc()).limit(3).all()
+                    if recent_checklists:
+                        pet_info += f"  Recent checklists for {pet.name}:\n"
+                        for checklist in recent_checklists:
+                            checklist_date = checklist.completion_date.strftime('%Y-%m-%d')
+                            checklist_time = checklist.completion_time.strftime('%I:%M %p')
+                            volunteer = checklist.volunteer_name if checklist.volunteer_name else "Unknown volunteer"
+                            
+                            # Get the completed items
+                            completed_items = []
+                            for completion in ChecklistCompletion.query.filter_by(checklist_id=checklist.id, completed=True).all():
+                                item = ChecklistItem.query.get(completion.checklist_item_id)
+                                if item:
+                                    completed_items.append(item.description)
+                            
+                            # Format the completed items
+                            completed_str = ", ".join(completed_items[:3])
+                            if len(completed_items) > 3:
+                                completed_str += f" and {len(completed_items) - 3} more items"
+                            
+                            pet_info += f"  * {checklist_date} at {checklist_time} - {volunteer} completed: {completed_str}\n"
+                    
                     pet_info += "\n"
         
         # Use the template from model_config.py
