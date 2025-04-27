@@ -1,7 +1,6 @@
 """
 AI model configuration for PawPass
 """
-import os
 from enum import Enum
 
 class ModelType(Enum):
@@ -14,7 +13,6 @@ class ModelType(Enum):
 class ModelConfig:
     """Configuration for AI models"""
     
-    # Default model configurations
     DEFAULT_CONFIGS = {
         ModelType.NLP: {
             "model_name": "text-embedding-3-small",
@@ -23,12 +21,12 @@ class ModelConfig:
             "dimensions": 1536
         },
         ModelType.RECOMMENDATION: {
-            "model_name": "gpt-4o",
+            "model_name": "gpt-4o",  # the newest OpenAI model is "gpt-4o" which was released May 13, 2024
             "temperature": 0.3,
             "max_tokens": 500
         },
         ModelType.BEHAVIOR: {
-            "model_name": "gpt-4o",
+            "model_name": "gpt-4o",  # the newest OpenAI model is "gpt-4o" which was released May 13, 2024
             "temperature": 0.1,
             "max_tokens": 1000
         },
@@ -37,6 +35,77 @@ class ModelConfig:
             "size": "1024x1024",
             "quality": "standard",
             "style": "natural"
+        }
+    }
+    
+    PROMPT_TEMPLATES = {
+        "care_summary": """
+        Please analyze the following updates for {pet_name}, a {pet_species}, and provide a concise care summary.
+        Focus on health trends, behavior patterns, medication compliance, and dietary observations.
+        Keep your response under 300 words and organize it by topics.
+        
+        UPDATES:
+        {updates}
+        """,
+        
+        "weight_trend_analysis": """
+        Please analyze the following weight records for {pet_name}, a {pet_species} (age: {pet_age}).
+        Provide insights on:
+        1. Overall weight trend (increasing, decreasing, stable)
+        2. Rate of change
+        3. Potential health implications
+        4. Recommendations for monitoring
+        
+        Keep your response under 250 words, be factual, and highlight any concerning patterns.
+        
+        WEIGHT RECORDS:
+        {weight_records}
+        """,
+        
+        "care_instructions": {
+            "feeding": """
+            Provide evidence-based feeding guidelines for a {species}. Include information on:
+            - Recommended food types
+            - Portion sizes by weight/age
+            - Feeding frequency
+            - Common nutritional requirements
+            - Foods to avoid
+            - Signs of feeding issues to watch for
+            
+            Make this practical for an animal shelter or foster volunteer.
+            """,
+            
+            "medication": """
+            Provide general medication administration guidance for a {species}. Include:
+            - Best practices for administering different medication types (pills, liquids, topicals)
+            - Techniques for difficult animals
+            - Common signs of adverse reactions
+            - Medication tracking tips
+            
+            Make this practical for an animal shelter or foster volunteer.
+            """,
+            
+            "litter_box": """
+            Provide comprehensive litter box/bathroom management guidelines for a {species}. Include:
+            - Recommended cleaning frequency
+            - Ideal placement
+            - Signs of potential health issues
+            - Normal vs. abnormal bathroom behavior
+            - How to handle accidents
+            
+            Make this practical for an animal shelter or foster volunteer.
+            """,
+            
+            "exercise": """
+            Provide guidelines for exercise and enrichment activities for a {species}. Include:
+            - Age-appropriate exercise needs
+            - Indoor and outdoor activity suggestions
+            - Mental stimulation techniques
+            - Signs of over-exertion
+            - How to gauge appropriate exercise levels
+            
+            Make this practical for an animal shelter or foster volunteer.
+            """
         }
     }
     
@@ -51,221 +120,29 @@ class ModelConfig:
         Returns:
             dict: Model configuration
         """
-        # Get default config
-        config = ModelConfig.DEFAULT_CONFIGS.get(model_type, {}).copy()
-        
-        # Override with environment variables if available
-        env_prefix = f"AI_MODEL_{model_type.value.upper()}_"
-        for key in config:
-            env_var = env_prefix + key.upper()
-            if env_var in os.environ:
-                config[key] = os.environ[env_var]
-                
-                # Convert to appropriate type
-                if isinstance(config[key], int):
-                    config[key] = int(os.environ[env_var])
-                elif isinstance(config[key], float):
-                    config[key] = float(os.environ[env_var])
-        
-        return config
-
+        if model_type in ModelConfig.DEFAULT_CONFIGS:
+            return ModelConfig.DEFAULT_CONFIGS[model_type]
+        else:
+            raise ValueError(f"Invalid model type: {model_type}")
+    
     @staticmethod
-    def get_prompt_template(template_name):
+    def get_prompt_template(template_name, care_type=None):
         """
         Get a prompt template by name
         
         Args:
             template_name: Name of the template
+            care_type: Type of care instructions if template_name is 'care_instructions'
             
         Returns:
             str: Prompt template text
         """
-        # Basic prompt templates
-        TEMPLATES = {
-            "pet_recommendation": """
-            Based on the following pet information and care history, provide care recommendations:
-            
-            Pet: {pet_name}
-            Species: {pet_species}
-            Age: {pet_age}
-            Health conditions: {health_conditions}
-            
-            Recent care history:
-            {care_history}
-            
-            Please provide specific recommendations for:
-            - Diet
-            - Exercise
-            - Medication
-            - Behavioral enrichment
-            
-            Format your response as a JSON object with the following structure:
-            {
-                "diet": [
-                    {"recommendation": "string", "reason": "string", "importance": "high/medium/low"},
-                    ...
-                ],
-                "exercise": [
-                    {"recommendation": "string", "reason": "string", "importance": "high/medium/low"},
-                    ...
-                ],
-                "medication": [
-                    {"recommendation": "string", "reason": "string", "importance": "high/medium/low"},
-                    ...
-                ],
-                "enrichment": [
-                    {"recommendation": "string", "reason": "string", "importance": "high/medium/low"},
-                    ...
-                ],
-                "summary": "A short summary of the key points"
-            }
-            """,
-            
-            "behavior_analysis": """
-            Analyze the following pet updates to identify behavior patterns:
-            
-            Pet: {pet_name}
-            Species: {pet_species}
-            
-            Updates:
-            {updates}
-            
-            Please identify:
-            - Recurring behaviors
-            - Changes in behavior over time
-            - Potential concerns
-            - Improvement opportunities
-            
-            Format your response as a JSON object with the following structure:
-            {
-                "recurring_behaviors": [
-                    {"behavior": "string", "frequency": "string", "context": "string"},
-                    ...
-                ],
-                "behavior_changes": [
-                    {"before": "string", "after": "string", "possible_cause": "string"},
-                    ...
-                ],
-                "concerns": [
-                    {"concern": "string", "reasoning": "string", "urgency": "high/medium/low"},
-                    ...
-                ],
-                "opportunities": [
-                    {"suggestion": "string", "benefit": "string", "implementation": "string"},
-                    ...
-                ],
-                "summary": "A concise summary of the key behavior patterns and recommendations"
-            }
-            """,
-            
-            "update_analysis": """
-            Analyze the following update from a volunteer:
-            
-            {update_text}
-            
-            Please extract:
-            - Key activities performed
-            - Pet's behavior
-            - Health observations
-            - Concerns or issues
-            - Follow-up recommendations
-            
-            Format your response as a JSON object with the following structure:
-            {
-                "activities": [
-                    {"activity": "string", "details": "string"},
-                    ...
-                ],
-                "behaviors": [
-                    {"behavior": "string", "context": "string"},
-                    ...
-                ],
-                "health_observations": [
-                    {"observation": "string", "significance": "string"},
-                    ...
-                ],
-                "concerns": [
-                    {"concern": "string", "urgency": "high/medium/low"},
-                    ...
-                ],
-                "follow_up": [
-                    {"recommendation": "string", "timeframe": "string"},
-                    ...
-                ],
-                "summary": "A concise summary of the key information"
-            }
-            """,
-            
-            "care_summary": """
-            Summarize the following pet care updates to provide a concise overview for handover between volunteers:
-            
-            Pet: {pet_name}
-            Species: {pet_species}
-            
-            Updates (from most recent to oldest):
-            {updates}
-            
-            Please create a concise summary that would be helpful for the next volunteer taking over care, including:
-            - Key care routines established
-            - Recent health observations
-            - Behavioral notes
-            - Important changes in the past few days
-            - Current medication schedule (if any)
-            - Feeding preferences and schedule
-            - Special attention areas
-            
-            Format your response as a JSON object with the following structure:
-            {
-                "care_summary": "A concise overall summary (max 3 sentences)",
-                "established_routines": [
-                    {"routine": "string", "details": "string", "importance": "high/medium/low"},
-                    ...
-                ],
-                "health_status": [
-                    {"observation": "string", "action_needed": "string/null"},
-                    ...
-                ],
-                "behavior_notes": [
-                    {"behavior": "string", "handling_tip": "string"},
-                    ...
-                ],
-                "feeding": {"schedule": "string", "preferences": "string", "restrictions": "string/null"},
-                "medication": [
-                    {"medication": "string", "schedule": "string", "instructions": "string", "last_given": "string"},
-                    ...
-                ],
-                "priority_attention": {"area": "string", "reason": "string", "urgency": "high/medium/low"}
-            }
-            """,
-            
-            "weight_trend_analysis": """
-            Analyze the following weight measurements for a pet:
-            
-            Pet: {pet_name}
-            Species: {pet_species}
-            Age: {pet_age}
-            
-            Weight records (from most recent to oldest):
-            {weight_records}
-            
-            Please analyze the weight trends and provide insights:
-            - Overall trend (gaining, losing, stable)
-            - Rate of change
-            - Healthiness of the current weight
-            - Recommendations
-            
-            Format your response as a JSON object with the following structure:
-            {
-                "trend": "string (e.g., 'increasing', 'decreasing', 'stable')",
-                "rate_of_change": "string (description of how quickly weight is changing)",
-                "health_assessment": "string (assessment of whether current weight appears healthy)",
-                "recommendations": [
-                    {"recommendation": "string", "reasoning": "string", "priority": "high/medium/low"},
-                    ...
-                ],
-                "summary": "A concise summary of the weight trend and key recommendations"
-            }
-            """
-        }
-        
-        return TEMPLATES.get(template_name, "")
+        if template_name == 'care_instructions':
+            if care_type in ModelConfig.PROMPT_TEMPLATES[template_name]:
+                return ModelConfig.PROMPT_TEMPLATES[template_name][care_type]
+            else:
+                raise ValueError(f"Invalid care type: {care_type}")
+        elif template_name in ModelConfig.PROMPT_TEMPLATES:
+            return ModelConfig.PROMPT_TEMPLATES[template_name]
+        else:
+            raise ValueError(f"Invalid template name: {template_name}")

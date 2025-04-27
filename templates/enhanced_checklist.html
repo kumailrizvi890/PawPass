@@ -1,0 +1,291 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Enhanced Checklist - {{ pet.name }}
+{% endblock %}
+
+{% block styles %}
+<style>
+    .card-medication {
+        border-left: 5px solid #dc3545;
+    }
+    
+    .card-feeding {
+        border-left: 5px solid #28a745;
+    }
+    
+    .card-water {
+        border-left: 5px solid #007bff;
+    }
+    
+    .card-litter, .card-bathroom {
+        border-left: 5px solid #6c757d;
+    }
+    
+    .card-exercise, .card-enrichment {
+        border-left: 5px solid #17a2b8;
+    }
+    
+    .card-grooming {
+        border-left: 5px solid #6f42c1;
+    }
+    
+    .btn-option {
+        margin: 3px;
+        min-width: 120px;
+    }
+    
+    .btn-option.selected {
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5);
+    }
+
+    /* Convert the type names to readable format */
+    .type-heading::first-letter {
+        text-transform: uppercase;
+    }
+    
+    .type-heading {
+        font-weight: bold;
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .item-card {
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    /* Color blind mode adjustments */
+    body.colorblind-mode .card-medication {
+        border-left: 5px solid #0077B6;
+    }
+    
+    body.colorblind-mode .card-feeding {
+        border-left: 5px solid #E6A800;
+    }
+    
+    body.colorblind-mode .card-water {
+        border-left: 5px solid #00A699;
+    }
+    
+    body.colorblind-mode .card-litter, 
+    body.colorblind-mode .card-bathroom {
+        border-left: 5px solid #CC79A7;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h1>Enhanced Care Checklist: {{ pet.name }}</h1>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <a href="{{ url_for('pet_profile', pet_id=pet.id) }}" class="btn btn-outline-primary">
+                    <i class="fas fa-arrow-left"></i> Back to Pet Profile
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <form action="{{ url_for('enhanced_features.enhanced_checklist', pet_id=pet.id) }}" method="post" id="checklist-form">
+        <div class="row">
+            <div class="col-md-8">
+                {% for item_type, items in grouped_items.items() %}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h3 class="type-heading">{{ item_type.replace('_', ' ') }}</h3>
+                    </div>
+                    <div class="card-body">
+                        {% for item in items %}
+                        <div class="card item-card card-{{ item_type }}">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ item.description }}</h5>
+                                
+                                {% if item.parsed_options %}
+                                <div class="btn-group-vertical w-100 mt-2" role="group" aria-label="Options">
+                                    {% for option in item.parsed_options %}
+                                    <button type="button" class="btn btn-outline-secondary btn-option mb-1"
+                                            data-item-id="{{ item.id }}" data-option="{{ option }}">
+                                        {{ option }}
+                                    </button>
+                                    {% endfor %}
+                                </div>
+                                <input type="hidden" name="item_{{ item.id }}" id="item_{{ item.id }}_value" value="">
+                                {% else %}
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" name="item_{{ item.id }}" 
+                                           id="item_{{ item.id }}" value="Completed">
+                                    <label class="form-check-label" for="item_{{ item.id }}">
+                                        Mark as completed
+                                    </label>
+                                </div>
+                                {% endif %}
+                                
+                                {% if item.unit %}
+                                <div class="mt-2">
+                                    <label for="measurement_{{ item.id }}" class="form-label">
+                                        Amount ({{ item.unit }})
+                                    </label>
+                                    <input type="number" class="form-control" id="measurement_{{ item.id }}" 
+                                           name="measurement_{{ item.id }}" step="0.1" min="0">
+                                </div>
+                                {% endif %}
+                                
+                                <div class="mt-2">
+                                    <label for="notes_{{ item.id }}" class="form-label">Notes</label>
+                                    <textarea class="form-control" id="notes_{{ item.id }}" 
+                                              name="notes_{{ item.id }}" rows="2"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="col-md-4">
+                <div class="card mb-4 sticky-top" style="top: 20px;">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">Complete Checklist</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="volunteer_name" class="form-label">Your Name</label>
+                            <input type="text" class="form-control" id="volunteer_name" name="volunteer_name">
+                        </div>
+                        <div class="mb-3">
+                            <label for="general_notes" class="form-label">General Notes</label>
+                            <textarea class="form-control" id="general_notes" name="general_notes" rows="4"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="fas fa-check-circle"></i> Complete Checklist
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card mt-4">
+                    <div class="card-header bg-info text-white">
+                        <h4 class="mb-0">Care Instructions</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <button type="button" class="btn btn-outline-primary care-instruction-btn" data-care-type="feeding">
+                                Feeding Instructions
+                            </button>
+                            <button type="button" class="btn btn-outline-primary care-instruction-btn" data-care-type="medication">
+                                Medication Instructions
+                            </button>
+                            <button type="button" class="btn btn-outline-primary care-instruction-btn" data-care-type="litter_box">
+                                Litter Box/Bathroom
+                            </button>
+                            <button type="button" class="btn btn-outline-primary care-instruction-btn" data-care-type="exercise">
+                                Exercise & Play
+                            </button>
+                        </div>
+                        <div id="care-instructions-container" class="mt-3 d-none">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 id="care-instructions-title"></h5>
+                                    <div id="care-instructions-content">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Care Instructions Modal -->
+<div class="modal fade" id="careInstructionsModal" tabindex="-1" aria-labelledby="careInstructionsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="careInstructionsModalLabel">Care Instructions</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="careInstructionsModalBody">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle option buttons
+        const optionButtons = document.querySelectorAll('.btn-option');
+        optionButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const itemId = this.getAttribute('data-item-id');
+                const option = this.getAttribute('data-option');
+                const hiddenInput = document.getElementById(`item_${itemId}_value`);
+                
+                // Deselect all buttons in the group
+                document.querySelectorAll(`.btn-option[data-item-id="${itemId}"]`).forEach(btn => {
+                    btn.classList.remove('selected');
+                    btn.classList.remove('btn-primary');
+                    btn.classList.add('btn-outline-secondary');
+                });
+                
+                // Select clicked button
+                this.classList.add('selected');
+                this.classList.remove('btn-outline-secondary');
+                this.classList.add('btn-primary');
+                
+                // Update hidden input value
+                hiddenInput.value = option;
+            });
+        });
+        
+        // Handle care instruction buttons
+        const careButtons = document.querySelectorAll('.care-instruction-btn');
+        careButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const careType = this.getAttribute('data-care-type');
+                const title = this.textContent.trim();
+                
+                // Show the container
+                document.getElementById('care-instructions-container').classList.remove('d-none');
+                document.getElementById('care-instructions-title').textContent = title;
+                document.getElementById('care-instructions-content').innerHTML = `
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                `;
+                
+                // Fetch care instructions
+                fetch(`/pet/{{ pet.id }}/care-instructions?care_type=${careType}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.error) {
+                            document.getElementById('care-instructions-content').innerHTML = 
+                                `<div class="alert alert-danger">${data.error}</div>`;
+                        } else {
+                            document.getElementById('care-instructions-content').innerHTML = 
+                                `<div>${data.text}</div>`;
+                        }
+                    })
+                    .catch(error => {
+                        document.getElementById('care-instructions-content').innerHTML = 
+                            `<div class="alert alert-danger">Error fetching care instructions: ${error}</div>`;
+                    });
+            });
+        });
+    });
+</script>
+{% endblock %}

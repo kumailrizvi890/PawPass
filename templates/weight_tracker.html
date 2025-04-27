@@ -1,74 +1,99 @@
 {% extends 'base.html' %}
 
-{% block title %}PawPass - Weight Tracker{% endblock %}
+{% block title %}
+    Weight Tracker - {{ pet.name }}
+{% endblock %}
 
 {% block content %}
-<div class="page-header">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2>Weight Tracker for {{ pet.name }}</h2>
-        <a href="{{ url_for('pet_profile', pet_id=pet.id) }}" class="btn btn-outline-primary">
-            <i class="fas fa-arrow-left"></i> Back to Pet Profile
-        </a>
-    </div>
-    <p>Track and monitor {{ pet.name }}'s weight over time.</p>
-</div>
-
-<div class="row">
-    <div class="col-md-6">
-        <div class="card mb-4">
-            <div class="card-header">
-                <h3>Add New Weight Record</h3>
-            </div>
-            <div class="card-body">
-                <form action="{{ url_for('add_weight_record', pet_id=pet.id) }}" method="POST">
-                    <div class="form-group mb-3">
-                        <label for="weight">Weight (kg)</label>
-                        <input type="number" step="0.01" class="form-control" id="weight" name="weight" required>
-                    </div>
-                    
-                    <div class="form-group mb-3">
-                        <label for="record_date">Date</label>
-                        <input type="date" class="form-control" id="record_date" name="record_date" value="{{ today }}" required>
-                    </div>
-                    
-                    <div class="form-group mb-3">
-                        <label for="volunteer_name">Your Name</label>
-                        <input type="text" class="form-control" id="volunteer_name" name="volunteer_name">
-                    </div>
-                    
-                    <div class="form-group mb-3">
-                        <label for="notes">Notes</label>
-                        <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
-                    </div>
-                    
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-plus"></i> Add Weight Record
-                    </button>
-                </form>
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h1>Weight Tracker: {{ pet.name }}</h1>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <a href="{{ url_for('pet_profile', pet_id=pet.id) }}" class="btn btn-outline-primary">
+                    <i class="fas fa-arrow-left"></i> Back to Pet Profile
+                </a>
             </div>
         </div>
     </div>
-    
-    <div class="col-md-6">
-        {% if weight_records %}
+
+    <div class="row">
+        <div class="col-lg-8">
             <div class="card mb-4">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h3>Weight History</h3>
-                    <button type="button" class="btn btn-sm btn-outline-primary" id="toggle-chart">
-                        <i class="fas fa-chart-line"></i> Toggle Chart
-                    </button>
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Weight History</h4>
                 </div>
                 <div class="card-body">
-                    <div id="weight-chart-container" style="height: 250px; display: none;" class="mb-3">
-                        <canvas id="weightChart"></canvas>
+                    {% if weight_records %}
+                        <canvas id="weightChart" height="300"></canvas>
+                    {% else %}
+                        <p class="text-center my-5">No weight records yet. Add the first one!</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">Add Weight Record</h4>
+                </div>
+                <div class="card-body">
+                    <form action="{{ url_for('enhanced_features.add_weight_record', pet_id=pet.id) }}" method="post">
+                        <div class="mb-3">
+                            <label for="weight" class="form-label">Weight (kg)</label>
+                            <input type="number" class="form-control" id="weight" name="weight" 
+                                step="0.01" min="0.1" max="200" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="record_date" class="form-label">Date</label>
+                            <input type="date" class="form-control" id="record_date" name="record_date" 
+                                value="{{ today }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="volunteer_name" class="form-label">Recorded by</label>
+                            <input type="text" class="form-control" id="volunteer_name" name="volunteer_name">
+                        </div>
+                        <div class="mb-3">
+                            <label for="notes" class="form-label">Notes</label>
+                            <textarea class="form-control" id="notes" name="notes" rows="2"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="fas fa-plus-circle"></i> Add Record
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            {% if weight_analysis %}
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h4 class="mb-0">AI Weight Analysis</h4>
+                </div>
+                <div class="card-body">
+                    <div id="weight-analysis">
+                        {{ weight_analysis.text|safe }}
                     </div>
-                    
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h4 class="mb-0">Weight Records</h4>
+                </div>
+                <div class="card-body p-0">
                     <div class="table-responsive">
-                        <table class="table table-striped">
+                        <table class="table table-striped table-hover mb-0">
                             <thead>
                                 <tr>
                                     <th>Date</th>
                                     <th>Weight (kg)</th>
+                                    <th>Recorded by</th>
                                     <th>Notes</th>
                                     <th>Actions</th>
                                 </tr>
@@ -78,14 +103,20 @@
                                 <tr>
                                     <td>{{ record.record_date.strftime('%Y-%m-%d') }}</td>
                                     <td>{{ record.weight }}</td>
-                                    <td>{{ record.notes or '-' }}</td>
+                                    <td>{{ record.volunteer_name or 'Unknown' }}</td>
+                                    <td>{{ record.notes or '' }}</td>
                                     <td>
-                                        <form action="{{ url_for('delete_weight_record', pet_id=pet.id, record_id=record.id) }}" method="POST" class="d-inline">
-                                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this weight record?')">
+                                        <form action="{{ url_for('enhanced_features.delete_weight_record', pet_id=pet.id, record_id=record.id) }}" method="post" 
+                                              onsubmit="return confirm('Are you sure you want to delete this weight record?');" style="display: inline;">
+                                            <button type="submit" class="btn btn-sm btn-danger">
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         </form>
                                     </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="5" class="text-center py-3">No weight records found.</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
@@ -93,99 +124,80 @@
                     </div>
                 </div>
             </div>
-            
-            {% if weight_analysis %}
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h3>Weight Analysis</h3>
-                </div>
-                <div class="card-body">
-                    <div class="alert alert-info">
-                        <p><strong>Trend:</strong> {{ weight_analysis.trend }}</p>
-                        <p><strong>Rate of Change:</strong> {{ weight_analysis.rate_of_change }}</p>
-                        <p><strong>Assessment:</strong> {{ weight_analysis.health_assessment }}</p>
-                    </div>
-                    
-                    {% if weight_analysis.recommendations %}
-                        <h4 class="mt-3">Recommendations</h4>
-                        <ul class="list-group">
-                            {% for recommendation in weight_analysis.recommendations %}
-                                <li class="list-group-item">
-                                    <span class="badge bg-{% if recommendation.priority == 'high' %}danger{% elif recommendation.priority == 'medium' %}warning{% else %}info{% endif %} me-2">
-                                        {{ recommendation.priority|title }}
-                                    </span>
-                                    <strong>{{ recommendation.recommendation }}</strong>
-                                    <p class="text-muted small mt-1">{{ recommendation.reasoning }}</p>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    {% endif %}
-                    
-                    {% if weight_analysis.summary %}
-                        <div class="mt-3">
-                            <h4>Summary</h4>
-                            <p>{{ weight_analysis.summary }}</p>
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
-            {% endif %}
-        {% else %}
-            <div class="alert alert-info">
-                <i class="fas fa-info-circle"></i> No weight records found. Add the first weight record to begin tracking.
-            </div>
-        {% endif %}
+        </div>
     </div>
 </div>
 {% endblock %}
 
 {% block scripts %}
-{% if weight_records %}
-<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Prepare chart data
-        const weightDates = {{ weight_dates|tojson }};
-        const weightValues = {{ weight_values|tojson }};
+        {% if weight_records %}
+        // Weight chart data
+        const dates = {{ weight_dates|tojson }};
+        const weights = {{ weight_values|tojson }};
         
-        // Setup chart
         const ctx = document.getElementById('weightChart').getContext('2d');
         const weightChart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: weightDates,
+                labels: dates,
                 datasets: [{
                     label: 'Weight (kg)',
-                    data: weightValues,
-                    borderColor: 'rgb(74, 140, 151)',
-                    backgroundColor: 'rgba(74, 140, 151, 0.2)',
+                    data: weights,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 2,
                     tension: 0.1,
-                    fill: true
+                    pointBackgroundColor: 'rgba(54, 162, 235, 1)',
+                    pointRadius: 5,
+                    pointHoverRadius: 7
                 }]
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: '{{ pet.name }}\'s Weight History',
+                        font: {
+                            size: 16
+                        }
+                    },
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            title: function(context) {
+                                return 'Date: ' + context[0].label;
+                            },
+                            label: function(context) {
+                                return 'Weight: ' + context.raw + ' kg';
+                            }
+                        }
+                    }
+                },
                 scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Date'
+                        },
+                        reverse: true // Most recent dates first (left)
+                    },
                     y: {
-                        beginAtZero: false
+                        beginAtZero: false,
+                        title: {
+                            display: true,
+                            text: 'Weight (kg)'
+                        }
                     }
                 }
             }
         });
-        
-        // Toggle chart visibility
-        document.getElementById('toggle-chart').addEventListener('click', function() {
-            const chartContainer = document.getElementById('weight-chart-container');
-            if (chartContainer.style.display === 'none') {
-                chartContainer.style.display = 'block';
-                this.innerHTML = '<i class="fas fa-table"></i> Toggle Table';
-            } else {
-                chartContainer.style.display = 'none';
-                this.innerHTML = '<i class="fas fa-chart-line"></i> Toggle Chart';
-            }
-        });
+        {% endif %}
     });
 </script>
-{% endif %}
 {% endblock %}

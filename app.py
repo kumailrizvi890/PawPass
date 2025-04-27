@@ -14,6 +14,10 @@ logging.basicConfig(level=logging.DEBUG)
 app = Flask(__name__)
 app.secret_key = os.environ.get("SESSION_SECRET", "pawpass-dev-key")
 
+# Register the enhanced features blueprint
+from enhanced_features import enhanced_features
+app.register_blueprint(enhanced_features)
+
 # Configure upload folders
 UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'static', 'uploads')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
