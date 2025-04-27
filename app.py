@@ -18,6 +18,14 @@ app.secret_key = os.environ.get("SESSION_SECRET", "pawpass-dev-key")
 from enhanced_features import enhanced_features
 app.register_blueprint(enhanced_features)
 
+# Add template context processor for current time in Pacific timezone
+@app.context_processor
+def utility_processor():
+    def now():
+        pacific_tz = pytz.timezone('America/Los_Angeles')
+        return datetime.utcnow().replace(tzinfo=pytz.utc).astimezone(pacific_tz)
+    return {'now': now}
+
 # Configure upload folders
 UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'static', 'uploads')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
@@ -702,12 +710,17 @@ def api_complete_checklist(pet_id):
         completed_items = data.get('completed_items', [])
         
         try:
-            now = datetime.now()
+            # Get Pacific Time
+            import pytz
+            pacific_tz = pytz.timezone('America/Los_Angeles')
+            now_utc = datetime.utcnow()
+            now_pacific = now_utc.replace(tzinfo=pytz.utc).astimezone(pacific_tz)
+            
             checklist = Checklist(
                 pet_id=pet.id,
                 volunteer_name=volunteer_name,
-                completion_date=now.date(),
-                completion_time=now.time(),
+                completion_date=now_pacific.date(),
+                completion_time=now_pacific.time(),
                 notes=notes
             )
             

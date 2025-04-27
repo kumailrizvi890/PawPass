@@ -185,7 +185,7 @@
           <div class="chat-message bot-message">
             <p>👋 Hi there! I'm the PawPass Pet Care Assistant. I can help you with pet care advice, answer questions about animal health, behavior, and more.</p>
             <p>What would you like to know today?</p>
-            <div class="message-time">{% now 'g:i A' %}</div>
+            <div class="message-time">{{ now().strftime('%I:%M %p') }} PT</div>
           </div>
           
           <!-- Quick suggestion chips -->
@@ -258,7 +258,7 @@
       messageElement.className = 'chat-message user-message';
       messageElement.innerHTML = `
         <p>${escapeHtml(message)}</p>
-        <div class="message-time">${pacificTime}</div>
+        <div class="message-time">${pacificTime} PT</div>
       `;
       chatContainer.appendChild(messageElement);
       scrollToBottom();
@@ -277,7 +277,7 @@
       messageElement.className = 'chat-message bot-message';
       messageElement.innerHTML = `
         <p>${message}</p>
-        <div class="message-time">${pacificTime}</div>
+        <div class="message-time">${pacificTime} PT</div>
       `;
       chatContainer.appendChild(messageElement);
       scrollToBottom();
