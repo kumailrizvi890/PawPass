@@ -83,7 +83,7 @@
             <ul class="update-list">
                 {% for update in updates %}
                     <li class="update-item">
-                        <span class="update-date">{{ update.update_date.strftime('%Y-%m-%d') }} at {{ update.update_time.strftime('%H:%M') }}</span>
+                        <span class="update-date">{{ update.update_date.strftime('%Y-%m-%d') }} at {{ update.update_time.strftime('%I:%M %p') }} PT</span>
                         {{ update.update_text }}
                         {% if update.volunteer_name %}
                             <div class="volunteer-badge">By: {{ update.volunteer_name }}</div>
@@ -109,7 +109,7 @@
             <ul class="checklist-list">
                 {% for checklist in checklists %}
                     <li class="checklist-item">
-                        <span class="checklist-date">{{ checklist.completion_date.strftime('%Y-%m-%d') }} at {{ checklist.completion_time.strftime('%H:%M') }}</span>
+                        <span class="checklist-date">{{ checklist.completion_date.strftime('%Y-%m-%d') }} at {{ checklist.completion_time.strftime('%I:%M %p') }} PT</span>
                         
                         {% if checklist.completed_items %}
                             <div class="checklist-details">
