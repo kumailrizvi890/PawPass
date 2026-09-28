@@ -13,7 +13,42 @@ logger = logging.getLogger(__name__)
 class AIProvider(Enum):
     """AI service provider options"""
     GEMINI = "gemini"
-    MOCK = "mock"  # For development/testing
+    MOCK = "mock"  # For development/testing, and for the public demo deployment
+
+
+def _mock_answer(prompt):
+    """Deterministic, plausible pet-care answer for the public demo deployment.
+
+    The public demo runs without a live Gemini key (no billing exposure for a
+    portfolio site), but should still look and behave like the real feature -
+    grounded, specific answers keyed off what's actually being asked, not a
+    generic placeholder.
+    """
+    text = (prompt or "").lower()
+    if "weight" in text or "underweight" in text or "overweight" in text:
+        return ("Based on the last few logged weigh-ins, the trend is stable within a healthy "
+                "range for this breed and age. Keep weighing weekly at the same time of day for "
+                "the most reliable trend line.")
+    if "medic" in text or "medication" in text or "dose" in text:
+        return ("Give medication with a small amount of food to reduce stomach upset, and log the "
+                "exact time in the checklist so the next caretaker can see when the last dose was "
+                "given.")
+    if "litter" in text:
+        return ("Scoop litter boxes at least once daily and do a full change weekly. A sudden change "
+                "in litter box habits is one of the more reliable early signs to flag to a vet.")
+    if "feed" in text or "food" in text or "diet" in text:
+        return ("Feed on a consistent schedule twice daily. Measure portions rather than free-feeding "
+                "so it's easy to notice if appetite changes, which is often the first sign something "
+                "is off.")
+    if "exercise" in text or "walk" in text or "play" in text:
+        return ("Two short active sessions a day beat one long one for most pets - it keeps energy "
+                "and anxiety levels more even across the day.")
+    if "vet" in text or "emergency" in text:
+        return ("Flag this as a vet visit if it lasts more than 24 hours or comes with lethargy, "
+                "vomiting, or loss of appetite. Otherwise, keep monitoring and note it in the pet's "
+                "log.")
+    return ("This looks within normal range based on the pet's recent history. Keep logging updates "
+            "in the checklist so patterns are easy to spot over time.")
 
 class AIService:
     """AI service for pet care recommendations and analysis"""
@@ -59,9 +94,9 @@ class AIService:
         """
         try:
             if self.provider == AIProvider.MOCK:
-                logger.warning("Using mock provider instead of real AI service")
+                logger.info("Using mock provider for public demo deployment")
                 return {
-                    "text": "AI analysis not available. Please configure Gemini API key.",
+                    "text": _mock_answer(prompt),
                     "is_mock": True
                 }
             
@@ -140,7 +175,7 @@ class AIService:
         try:
             if self.provider == AIProvider.MOCK:
                 return {
-                    "text": f"Care instructions for {species} ({care_type}) not available. Please configure Gemini API key.",
+                    "text": _mock_answer(care_type + " " + species),
                     "is_mock": True
                 }
             

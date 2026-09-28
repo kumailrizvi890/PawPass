@@ -27,15 +27,29 @@ def utility_processor():
         return datetime.utcnow().replace(tzinfo=pytz.utc).astimezone(pacific_tz)
     return {'now': now}
 
+# Serverless (Vercel) deployments ship a read-only filesystem except /tmp -
+# detect that and route writable paths (uploads, the default SQLite file) there.
+ON_SERVERLESS = bool(os.environ.get("VERCEL"))
+
 # Configure upload folders
-UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'static', 'uploads')
+UPLOAD_FOLDER = (
+    "/tmp/uploads" if ON_SERVERLESS
+    else os.path.join(os.path.dirname(__file__), 'static', 'uploads')
+)
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+try:
+    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+except OSError:
+    logging.warning(f"Could not create upload folder {UPLOAD_FOLDER}; uploads may be unavailable.")
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # 5MB max upload size
 
-# Configure database
-database_url = os.environ.get("DATABASE_URL", "sqlite:///pawpass.db")
+# Configure database. On the public demo deployment (Vercel) this runs
+# against a self-seeding SQLite file in /tmp rather than a shared Postgres
+# instance - there's no multi-user data to persist for a portfolio demo, and
+# it means the live demo never depends on external DB credentials.
+_default_db_url = "sqlite:////tmp/pawpass.db" if ON_SERVERLESS else "sqlite:///pawpass.db"
+database_url = os.environ.get("DATABASE_URL", _default_db_url)
 app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
     "pool_recycle": 300,
