@@ -21,7 +21,6 @@ The application follows a modular architecture with the following components:
 - **Email**: Email processing and notifications
 - **AI**: AI integration for pet care recommendations
 - **Encryption**: Data security and encryption
-- **Quantum**: Azure Quantum integration (future capability)
 
 ### Tech Stack
 - **Backend**: Flask (Python)

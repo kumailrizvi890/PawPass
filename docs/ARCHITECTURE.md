@@ -20,16 +20,16 @@ PawPass is built using a modular architecture that separates concerns into disti
                          |             |
                          +------+------+
                                 |
-            +---------+---------+---------+---------+
-            |         |         |         |         |
-      +-----v---+ +---v-----+ +-v-------+ +-v-----+ +--v------+
-      |         | |         | |         | |       | |         |
-      | Auth    | | Email   | | AI      | |Encrypt| | Quantum |
-      | Module  | | Module  | | Module  | |Module | | Module  |
-      |         | |         | |         | |       | |         |
-      +-----+---+ +---+-----+ +-+-------+ +-+-----+ +----+----+
-            |         |         |           |            |
-            +---------+---------+-----------+------------+
+            +---------+---------+---------+
+            |         |         |         |
+      +-----v---+ +---v-----+ +-v-------+ +-v-----+
+      |         | |         | |         | |       |
+      | Auth    | | Email   | | AI      | |Encrypt|
+      | Module  | | Module  | | Module  | |Module |
+      |         | |         | |         | |       |
+      +-----+---+ +---+-----+ +-+-------+ +-+-----+
+            |         |         |           |
+            +---------+---------+-----------+
                                 |
                          +------v------+
                          |             |
@@ -75,12 +75,6 @@ PawPass is built using a modular architecture that separates concerns into disti
 - Implements data privacy features
 - Handles secure communication channels
 
-### Azure Quantum Module (pawpass/quantum/)
-- Explores quantum computing applications for pet care optimization
-- Implements quantum-resistant encryption (future capability)
-- Provides advanced data analysis using quantum algorithms
-- Offers potential for breakthrough optimization in resource allocation
-
 ## Data Flow
 
 1. **User Interaction Flow**:
@@ -99,11 +93,6 @@ PawPass is built using a modular architecture that separates concerns into disti
    - Insights and recommendations are generated
    - Results are presented to users for improved care
 
-4. **Quantum Processing Flow** (Future):
-   - Complex optimization problems are identified
-   - Problems are formatted for quantum processing
-   - Azure Quantum processes data
-   - Optimized results are returned and implemented
 
 ## API Design
 
