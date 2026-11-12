@@ -55,3 +55,10 @@ The application follows a modular architecture with the following components:
 - Document all functions and modules
 - Write tests for new features
 - Commit changes with descriptive messages
+
+## Redesign (Nov 2026)
+- Warm, rounded redesign ported from the PawPass 3D redesign: soft daylight palette, orange pass card with gentle 3D tilt and flip (`static/css/pawpass-redesign.css`, `static/js/pawpass-pass.js`).
+- The pet profile is a flippable pass. Front: pet identity and pass status. Back: feeding instructions, medical notes, latest update and checklist count from the real record.
+- Pass status is derived from the pet's real record only: a pet flagged for emergency care shows "Action needed"; otherwise "Ready at check-in". PawPass does not store vaccination records, so the pass makes no vaccination claim.
+- Offline-first: the service worker (`pawpass-v2`) precaches the redesign assets and the home, pet list and add-a-pet pages; a header badge shows live online/offline state.
+- CI (`.github/workflows/ci.yml`) runs on every push to main and pull request: it compile-checks the Python, parse-checks every Jinja template, and verifies the service worker only caches files that exist. The backend logic, tests and data model were not changed.
