@@ -1,0 +1,460 @@
+/* PawPass redesign — warm, friendly, rounded (Nov 2026).
+   Ported from the PawPass 3D redesign concept into the live app.
+   Loaded after style.css so these rules win where they overlap.
+   Palette: soft daylight cream, warm orange, deep green.
+   Motion: playful bounce easing; disabled under reduced-motion. */
+
+:root {
+  --pp-cream: #fff6e5;
+  --pp-cream-2: #fffaf0;
+  --pp-card: #fffdf8;
+  --pp-ink: #2e2118;
+  --pp-ink-soft: #6f5d4f;
+  --pp-orange: #e85d2a;
+  --pp-orange-deep: #d14e1f;
+  --pp-amber: #f59e0b;
+  --pp-peach: #ffe8d6;
+  --pp-green: #0e7a5f;
+  --pp-green-soft: #d8efe6;
+  --pp-red-soft: #fde8e0;
+  --pp-line: #f1dfc8;
+  --pp-shadow: 0 18px 40px rgba(94, 52, 18, 0.14);
+  --pp-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --pp-radius: 24px;
+}
+
+body {
+  background: var(--pp-cream);
+  color: var(--pp-ink);
+  font-family: ui-rounded, "SF Pro Rounded", "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+h1, h2, h3, h4 {
+  letter-spacing: -0.02em;
+  line-height: 1.12;
+}
+
+/* ---- Header + footer, warmed up (keeps existing layout) ---- */
+header,
+.site-header {
+  background: linear-gradient(135deg, #f2622e, #e85d2a 55%, #d14e1f);
+  border-bottom: none;
+  box-shadow: 0 8px 24px rgba(209, 78, 31, 0.28);
+}
+
+header a.nav-button,
+.nav-button {
+  border-radius: 999px;
+  transition: transform 0.25s var(--pp-bounce), background 0.2s ease;
+}
+
+header a.nav-button:hover,
+.nav-button:hover {
+  transform: translateY(-2px) scale(1.03);
+}
+
+footer.site-footer {
+  background: #173f35;
+  border-top: none;
+}
+
+/* ---- Offline-first badge (header + pass) ---- */
+.offline-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.offline-badge .dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: #34d399;
+}
+
+.offline-badge.is-offline {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.offline-badge.is-offline .dot {
+  background: var(--pp-amber);
+}
+
+/* ---- Buttons ---- */
+.btn-pass,
+.pass-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 999px;
+  background: var(--pp-orange);
+  color: #fff;
+  font-weight: 800;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 10px 22px rgba(232, 93, 42, 0.35);
+  transition: transform 0.25s var(--pp-bounce), box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.btn-pass:hover,
+.pass-btn:hover {
+  background: var(--pp-orange-deep);
+  transform: translateY(-2px) scale(1.03);
+  color: #fff;
+  text-decoration: none;
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--pp-ink);
+  font-weight: 800;
+  text-decoration: none;
+  border: 2px solid var(--pp-line);
+  cursor: pointer;
+  transition: transform 0.25s var(--pp-bounce), border-color 0.2s ease;
+}
+
+.btn-ghost:hover {
+  border-color: var(--pp-orange);
+  transform: translateY(-2px) scale(1.03);
+  text-decoration: none;
+}
+
+/* ---- Hero + three steps (home / add-a-pet) ---- */
+.pp-hero {
+  text-align: center;
+  padding: 2.5rem 1rem 1rem;
+}
+
+.pp-eyebrow {
+  display: inline-block;
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  background: var(--pp-peach);
+  color: var(--pp-orange-deep);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.pp-hero h1,
+.pp-hero h2 {
+  font-size: clamp(2rem, 5vw, 3.25rem);
+  font-weight: 800;
+  margin: 1rem 0 0.75rem;
+}
+
+.pp-hero p.lead {
+  color: var(--pp-ink-soft);
+  font-size: 1.15rem;
+  max-width: 42rem;
+  margin: 0 auto 1.5rem;
+}
+
+.pp-cta-row {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.pp-steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin: 2rem 0;
+}
+
+.pp-step {
+  background: var(--pp-card);
+  border: 1px solid var(--pp-line);
+  border-radius: var(--pp-radius);
+  padding: 1.25rem;
+  text-align: left;
+  box-shadow: 0 6px 18px rgba(94, 52, 18, 0.06);
+}
+
+.pp-step .num {
+  display: inline-flex;
+  width: 2rem;
+  height: 2rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--pp-orange);
+  color: #fff;
+  font-weight: 800;
+  margin-bottom: 0.6rem;
+}
+
+.pp-step h3 {
+  margin: 0 0 0.35rem;
+  font-size: 1.05rem;
+}
+
+.pp-step p {
+  margin: 0;
+  color: var(--pp-ink-soft);
+  font-size: 0.95rem;
+}
+
+/* ---- Pet cards (Pet Care Center) as mini passes ---- */
+.pet-card,
+.pet-grid .pet-card {
+  border-radius: var(--pp-radius);
+  border: 1px solid var(--pp-line);
+  background: var(--pp-card);
+  box-shadow: 0 6px 18px rgba(94, 52, 18, 0.06);
+  overflow: hidden;
+  transition: transform 0.3s var(--pp-bounce), box-shadow 0.3s ease;
+}
+
+.pet-card:hover {
+  transform: translateY(-6px) rotate(-0.5deg);
+  box-shadow: var(--pp-shadow);
+}
+
+.pet-card img {
+  border-radius: 18px;
+}
+
+/* ---- Status pills (derived from real data: emergency flag) ---- */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.status-ready {
+  background: var(--pp-green-soft);
+  color: var(--pp-green);
+}
+
+.status-action {
+  background: var(--pp-red-soft);
+  color: #b3261e;
+}
+
+/* ---- The flippable pass (pet profile) ---- */
+.pass-scene {
+  perspective: 1200px;
+  max-width: 620px;
+  margin: 0 auto 2rem;
+}
+
+.pass-tilt {
+  transform: rotateX(var(--pp-rx, 0deg)) rotateY(var(--pp-ry, 0deg));
+  transition: transform 0.35s var(--pp-bounce);
+  transform-style: preserve-3d;
+}
+
+.pass-inner {
+  position: relative;
+  min-height: 340px;
+  transform-style: preserve-3d;
+  transition: transform 0.7s var(--pp-bounce);
+}
+
+.pass-scene.flipped .pass-inner {
+  transform: rotateY(180deg);
+}
+
+.pass-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: var(--pp-shadow);
+}
+
+.pass-front {
+  background: linear-gradient(135deg, #ff8a3d 0%, #f2622e 48%, #e85d2a 100%);
+  color: #fff;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.pass-back {
+  background: var(--pp-card);
+  color: var(--pp-ink);
+  border: 1px solid var(--pp-line);
+  transform: rotateY(180deg);
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+.pass-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  font-size: 0.85rem;
+}
+
+.pass-front .status-pill {
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.pass-front .status-action {
+  color: #b3261e;
+}
+
+.pass-front .status-ready {
+  color: var(--pp-green);
+}
+
+.pass-pet {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin: 1.25rem 0 1rem;
+}
+
+.pass-pet img {
+  width: 104px;
+  height: 104px;
+  object-fit: cover;
+  border-radius: 24px;
+  border: 3px solid rgba(255, 255, 255, 0.85);
+  background: #fff;
+}
+
+.pass-pet h2 {
+  margin: 0;
+  font-size: 2rem;
+  color: #fff;
+}
+
+.pass-pet p {
+  margin: 0.15rem 0 0;
+  opacity: 0.95;
+}
+
+.pass-meta {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  margin-top: auto;
+}
+
+.pass-meta div {
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 16px;
+  padding: 0.65rem 0.8rem;
+}
+
+.pass-meta .label {
+  display: block;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+.pass-meta .value {
+  font-weight: 800;
+}
+
+.pass-back h3 {
+  margin-top: 0;
+}
+
+.pass-back h4 {
+  margin: 1.1rem 0 0.35rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--pp-orange-deep);
+}
+
+.pass-back p {
+  margin: 0.2rem 0;
+  color: var(--pp-ink-soft);
+}
+
+.pass-back .record-note {
+  font-size: 0.85rem;
+  background: var(--pp-cream-2);
+  border: 1px dashed var(--pp-line);
+  border-radius: 14px;
+  padding: 0.7rem 0.9rem;
+}
+
+.pass-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 0 auto 2rem;
+}
+
+/* ---- Forms (add / edit a pet) ---- */
+.form-container {
+  border-radius: 28px;
+  border: 1px solid var(--pp-line);
+  background: var(--pp-card);
+  box-shadow: 0 10px 28px rgba(94, 52, 18, 0.08);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  border-radius: 14px;
+  border: 2px solid var(--pp-line);
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: var(--pp-orange);
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(232, 93, 42, 0.18);
+}
+
+/* ---- Generic card rounding across the app ---- */
+.pet-profile,
+.pet-detail,
+.pet-grid,
+.card,
+.checklist-container,
+.chat-container {
+  border-radius: var(--pp-radius);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pass-inner,
+  .pass-tilt,
+  .pet-card,
+  .btn-pass,
+  .btn-ghost {
+    transition: none;
+  }
+}
