@@ -9,6 +9,73 @@
     </a>
 </div>
 
+<!-- PawPass: the flippable pass. Front: identity + pass status. Back: the real care
+     record on file. Pass status is derived from the pet's real record (the emergency
+     flag); PawPass does not store vaccination records, so no vaccination claim is shown. -->
+<div class="pass-scene" id="pet-pass">
+    <div class="pass-tilt">
+        <div class="pass-inner">
+            <div class="pass-face pass-front">
+                <div class="pass-top">
+                    <span>PAWPASS</span>
+                    <span>PP-{{ pet.id }}</span>
+                    {% if pet.is_emergency %}
+                        <span class="status-pill status-action">Action needed</span>
+                    {% else %}
+                        <span class="status-pill status-ready">Ready at check-in</span>
+                    {% endif %}
+                </div>
+                <div class="pass-pet">
+                    {% if pet.image_url %}
+                        {% if pet.image_url.startswith('http') %}
+                            <img src="{{ pet.image_url }}" alt="{{ pet.name }}">
+                        {% else %}
+                            <img src="/static{{ pet.image_url }}" alt="{{ pet.name }}">
+                        {% endif %}
+                    {% else %}
+                        <div class="placeholder-image">{{ pet.name[0] }}</div>
+                    {% endif %}
+                    <div>
+                        <h2>{{ pet.name }}</h2>
+                        <p>{{ pet.species }}{% if pet.breed %} &middot; {{ pet.breed }}{% endif %}</p>
+                    </div>
+                </div>
+                <div class="pass-meta">
+                    <div><span class="label">Age</span><span class="value">{{ pet.age or '&mdash;' }}</span></div>
+                    <div><span class="label">Gender</span><span class="value">{{ pet.gender or '&mdash;' }}</span></div>
+                    <div><span class="label">Updates logged</span><span class="value">{{ updates|length }}</span></div>
+                </div>
+            </div>
+            <div class="pass-face pass-back">
+                <h3>{{ pet.name }}'s care record</h3>
+                <p class="record-note">This pass shows the real record on file &mdash; feeding instructions, medical notes and the latest logged care. PawPass does not store vaccination records.</p>
+                <h4>Feeding</h4>
+                <p>{{ pet.feeding_instructions or "No feeding instructions on file." }}</p>
+                <h4>Medical notes</h4>
+                <p>{{ pet.medical_notes or "No medical notes on file." }}</p>
+                <h4>Latest update</h4>
+                {% if updates %}
+                    <p>{{ updates[0].update_date.strftime('%Y-%m-%d') }} at {{ updates[0].update_time.strftime('%I:%M %p') }} PT &mdash; {{ updates[0].update_text }}{% if updates[0].volunteer_name %} ({{ updates[0].volunteer_name }}){% endif %}</p>
+                {% else %}
+                    <p>No updates logged yet.</p>
+                {% endif %}
+                <h4>Recent checklists</h4>
+                {% if checklists %}
+                    <p>{{ checklists|length }} completed &mdash; latest {{ checklists[0].completion_date.strftime('%Y-%m-%d') }}.</p>
+                {% else %}
+                    <p>No checklists completed yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+<div class="pass-actions">
+    <button type="button" class="btn-pass" data-flip-pass aria-pressed="false">Flip pass</button>
+    <a href="{{ url_for('add_update', pet_id=pet.id) }}" class="btn-ghost">
+        <i class="fas fa-plus"></i> Add update
+    </a>
+</div>
+
 <div class="pet-profile-header">
     <div class="pet-profile-image">
         {% if pet.image_url %}
