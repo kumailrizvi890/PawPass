@@ -1,0 +1,43 @@
+# CI for PawPass: compile-check the Python, parse-check every Jinja
+# template, and verify the service worker only caches files that exist.
+# No network services or secrets are needed; the app itself is not
+# started here (Vercel deploys it separately on every push to main).
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install Jinja2 (template check only)
+        run: pip install jinja2
+      - name: Compile all Python
+        run: python -m compileall -q app.py models.py main.py app_utils.py enhanced_features.py pawpass
+      - name: Parse every Jinja template
+        run: |
+          python - <<'PY'
+          import pathlib
+          from jinja2 import Environment, FileSystemLoader
+          env = Environment(loader=FileSystemLoader("templates"))
+          for path in sorted(pathlib.Path("templates").glob("*.html")):
+              env.parse(path.read_text(encoding="utf-8"))
+              print(f"ok {path}")
+          PY
+      - name: Service worker must only cache files that exist
+        run: |
+          python - <<'PY'
+          import os, re
+          sw = open("static/service-worker.js", encoding="utf-8").read()
+          missing = [p for p in re.findall(r"'(/static/[^']+)'", sw) if not os.path.exists(p.lstrip("/"))]
+          assert not missing, f"service worker caches missing files: {missing}"
+          print("service worker cache list ok")
+          PY
