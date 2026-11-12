@@ -4,10 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="PawPass - A lightweight web platform for animal shelter volunteers to track pet care">
-    <meta name="theme-color" content="#0072B2">
+    <meta name="theme-color" content="#e85d2a">
     <title>{% block title %}PawPass - Pet Care Handoff{% endblock %}</title>
     <link id="main-stylesheet" rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/enhanced-chatbot.css') }}">
+    <!-- PawPass 3D redesign: warm palette, rounded cards, flippable pass -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pawpass-redesign.css') }}">
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- PWA Support -->
@@ -31,6 +33,7 @@
                 <span class="logo-text">PawPass</span>
             </a></h1>
             <nav>
+                <span class="offline-badge" data-offline-badge><span class="dot"></span> Offline-ready pass</span>
                 <a href="{{ url_for('home') }}" class="nav-button">
                     <i class="fas fa-home"></i> Home
                 </a>
@@ -99,7 +102,7 @@
                     <span class="footer-logo-text">PawPass</span>
                 </div>
                 <div class="footer-info">
-                    <p>&copy; 2025 PawPass - A pet care coordination platform</p>
+                    <p>&copy; 2026 PawPass - A pet care coordination platform</p>
                     <p>Making pet care handoffs between shelter volunteers seamless</p>
                 </div>
                 <div class="footer-links">
@@ -112,6 +115,7 @@
     </footer>
 
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/pawpass-pass.js') }}" defer></script>
     
     <!-- Service Worker Registration -->
     <script>
