@@ -7,8 +7,15 @@
     <a href="{{ url_for('index') }}" class="btn btn-outline">
         <i class="fas fa-arrow-left"></i> Back to Pet List
     </a>
+    <span class="pp-eyebrow">Step 1 of 3 &mdash; Add a pet</span>
     <h2>Add New Pet</h2>
     <p>Fill out the form below to add a new pet to the system.</p>
+</div>
+
+<div class="pp-steps">
+    <div class="pp-step"><span class="num">1</span><h3>Add a pet</h3><p>Name, species, feeding and medical notes &mdash; the real record, nothing made up.</p></div>
+    <div class="pp-step"><span class="num">2</span><h3>Log care</h3><p>Add updates and complete shift checklists so the pass stays current.</p></div>
+    <div class="pp-step"><span class="num">3</span><h3>Show the pass</h3><p>Flip the pass at check-in. It works offline &mdash; saved on this device.</p></div>
 </div>
 
 <div class="card">
@@ -83,7 +90,7 @@
             </div>
             
             <div class="form-actions">
-                <button type="submit" class="btn btn-primary">
+                <button type="submit" class="btn-pass">
                     <i class="fas fa-save"></i> Save Pet
                 </button>
                 <a href="{{ url_for('index') }}" class="btn btn-secondary">
@@ -91,6 +98,7 @@
                 </a>
             </div>
         </form>
+        <p class="record-note" style="margin-top: 1rem;">Saving creates the pet's pass from exactly what you enter here &mdash; feeding instructions, medical notes and latest care. Check it on the pet's profile after saving.</p>
     </div>
 </div>
 {% endblock %}
