@@ -4,7 +4,6 @@
 const CACHE_NAME = 'pawpass-v2';
 const ASSETS_TO_CACHE = [
   '/',
-  '/home',
   '/pets',
   '/add-pet',
   '/static/css/style.css',
@@ -21,12 +20,18 @@ const ASSETS_TO_CACHE = [
 ];
 
 // Install event - Cache assets
+// Note: the home page is '/' (there is no '/home' route), so only '/' is cached.
+// Assets are cached one by one so a single missing file cannot fail the install.
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
         console.log('Opened cache');
-        return cache.addAll(ASSETS_TO_CACHE);
+        return Promise.all(
+          ASSETS_TO_CACHE.map(url =>
+            cache.add(url).catch(error => console.warn('Could not cache', url, error))
+          )
+        );
       })
   );
 });
