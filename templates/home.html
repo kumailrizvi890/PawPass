@@ -5,17 +5,24 @@
 {% block content %}
 <div class="hero-section">
     <div class="hero-content">
-        <h1 class="hero-title">Find a furry friend who needs your care</h1>
-        <p class="hero-subtitle">Open your heart and home to a friend for life.</p>
+        <span class="pp-eyebrow">Offline-first &middot; Shelter &amp; foster care</span>
+        <h1 class="hero-title">Every pet. One pass. Always ready at check-in.</h1>
+        <p class="hero-subtitle">Each pet's feeding, medical notes and latest care, saved on your device and ready to show &mdash; even offline.</p>
         <div class="hero-buttons">
-            <a href="{{ url_for('pet_center') }}" class="btn btn-primary btn-lg">
+            <a href="{{ url_for('pet_center') }}" class="btn-pass btn-lg">
                 <i class="fas fa-paw"></i> Browse Pets
             </a>
-            <a href="{{ url_for('add_pet') }}" class="btn btn-outline btn-lg">
+            <a href="{{ url_for('add_pet') }}" class="btn-ghost btn-lg">
                 <i class="fas fa-plus"></i> Add New Pet
             </a>
         </div>
     </div>
+</div>
+
+<div class="pp-steps">
+    <div class="pp-step"><span class="num">1</span><h3>Add a pet</h3><p>Name, species, feeding and medical notes &mdash; the real record, nothing made up.</p></div>
+    <div class="pp-step"><span class="num">2</span><h3>Log care</h3><p>Add updates and complete shift checklists so the pass stays current.</p></div>
+    <div class="pp-step"><span class="num">3</span><h3>Show the pass</h3><p>Flip the pass at check-in. It works offline &mdash; saved on this device.</p></div>
 </div>
 
 <div class="spline-animation-section">
@@ -125,13 +132,14 @@
         display: flex;
         flex-direction: column;
         padding: 80px 20px;
-        background-color: rgba(244, 178, 186, 0.1);
+        background-color: #fff6e5;
         background-image: url('/static/images/paw-background.png');
         background-repeat: no-repeat;
         background-position: 95% 5%;
         background-size: 150px;
         margin-bottom: 40px;
         border-radius: var(--border-radius);
+        border: 1px solid #f1dfc8;
         text-align: center;
         position: relative;
         overflow: hidden;
@@ -149,7 +157,7 @@
     .hero-title {
         font-size: 3.2rem;
         margin-bottom: 20px;
-        color: var(--primary-color);
+        color: #d14e1f;
         font-weight: 700;
         line-height: 1.2;
     }
@@ -214,13 +222,14 @@
     /* CTA Section */
     .cta-section {
         text-align: center;
-        background-color: rgba(244, 178, 186, 0.1);
+        background-color: #fff6e5;
         background-image: url('/static/images/paw-background.png');
         background-repeat: no-repeat;
         background-position: 10% 85%;
         background-size: 120px;
         padding: 60px 30px;
         border-radius: var(--border-radius);
+        border: 1px solid #f1dfc8;
         margin-bottom: 40px;
         position: relative;
         overflow: hidden;
