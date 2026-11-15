@@ -8,12 +8,12 @@
     "medical_notes": "Allergy meds once daily in the morning. Pill can be hidden in treat.",
     "behavior_notes": "Shy, hides at first but friendly once comfortable. Loves string toys.",
     "updates": [
-      {"date": "2023-06-15", "time": "09:00", "note": "Fed at 9am. Hiding under bed."},
-      {"date": "2023-06-15", "time": "18:30", "note": "Took meds. Ate all food. Played for 10 minutes."}
+      {"date": "2026-11-14", "time": "09:00", "note": "Fed at 9am. Hiding under bed."},
+      {"date": "2026-11-14", "time": "18:30", "note": "Took meds. Ate all food. Played for 10 minutes."}
     ],
     "checklists": [
       {
-        "date": "2023-06-15",
+        "date": "2026-11-14",
         "time": "18:00",
         "fed": true,
         "meds": true,
@@ -32,12 +32,12 @@
     "medical_notes": "No current medications. Due for vaccines next month.",
     "behavior_notes": "Very energetic. Needs at least 30 minutes of exercise daily. Good with other dogs.",
     "updates": [
-      {"date": "2023-06-14", "time": "08:30", "note": "Morning walk for 20 minutes. Fed breakfast."},
-      {"date": "2023-06-14", "time": "17:00", "note": "Afternoon play session in yard. Very energetic today."}
+      {"date": "2026-11-13", "time": "08:30", "note": "Morning walk for 20 minutes. Fed breakfast."},
+      {"date": "2026-11-13", "time": "17:00", "note": "Afternoon play session in yard. Very energetic today."}
     ],
     "checklists": [
       {
-        "date": "2023-06-14",
+        "date": "2026-11-13",
         "time": "21:00",
         "fed": true,
         "meds": false,
@@ -56,12 +56,12 @@
     "medical_notes": "Eye drops twice daily. Heart medication in the morning.",
     "behavior_notes": "Senior dog, gentle and calm. Prefers short walks and lots of naps.",
     "updates": [
-      {"date": "2023-06-15", "time": "10:00", "note": "Morning meds given. Ate about half her breakfast."},
-      {"date": "2023-06-15", "time": "15:30", "note": "Short walk around the block. Seems a bit tired today."}
+      {"date": "2026-11-14", "time": "10:00", "note": "Morning meds given. Ate about half her breakfast."},
+      {"date": "2026-11-14", "time": "15:30", "note": "Short walk around the block. Seems a bit tired today."}
     ],
     "checklists": [
       {
-        "date": "2023-06-15",
+        "date": "2026-11-14",
         "time": "20:00",
         "fed": true,
         "meds": true,
