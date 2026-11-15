@@ -83,6 +83,18 @@ with app.app_context():
     from app_utils import create_default_enhanced_checklist_items
     create_default_enhanced_checklist_items(db, EnhancedChecklistItem)
 
+    # Remove the old test pet if it is still in the database. Pip was
+    # added by hand through the live demo and is not part of the seed
+    # data, so drop it (and its updates and checklists, which go with
+    # it) on every boot. This covers a database that outlives a deploy,
+    # not just a fresh seed.
+    test_pets = Pet.query.filter(Pet.name.ilike("pip")).all()
+    for test_pet in test_pets:
+        db.session.delete(test_pet)
+    if test_pets:
+        db.session.commit()
+        logging.info(f"Removed {len(test_pets)} test pet(s) named Pip")
+
 # Data storage path (for migration/fallback)
 PETS_DATA_FILE = os.path.join(os.path.dirname(__file__), 'static', 'data', 'pets.json')
 
