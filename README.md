@@ -3,6 +3,8 @@
 ## Overview
 PawPass is a lightweight web platform designed for animal shelters and foster volunteers to easily transfer pet information between shifts, volunteers, fosters, and shelters without relying on emails and Excel sheets. The application is built as a Progressive Web App (PWA) with offline functionality and database persistence, featuring a custom logo and user-friendly interface that facilitates seamless pet care coordination.
 
+Live demo: https://pawpass-kumailr.vercel.app - on mobile, navigation collapses into a hamburger menu.
+
 ## Features
 - **Pet Profiles**: Create and manage detailed pet information
 - **Care Updates**: Log updates about pet care and behavior
@@ -39,7 +41,7 @@ The application follows a modular architecture with the following components:
 
 ## Integration Patterns
 - **Database Integration**: Direct ORM integration with PostgreSQL
-- **Authentication**: Session-based authentication (future implementation)
+- **Authentication**: Session-based authentication for user login, registration, and profile management.
 - **PWA**: Cache-first strategy with background sync for offline mode
 - **Image Upload**: Multipart form data with server-side processing
 - **Search**: Database query pattern with real-time results
