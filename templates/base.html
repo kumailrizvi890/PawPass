@@ -32,7 +32,10 @@
                 <img src="{{ url_for('static', filename='images/pawpass-logo.png') }}" alt="PawPass Logo" class="header-logo">
                 <span class="logo-text">PawPass</span>
             </a></h1>
-            <nav>
+            <button class="nav-toggle" id="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="main-nav">
+                <span></span><span></span><span></span>
+            </button>
+            <nav id="main-nav">
                 <span class="offline-badge" data-offline-badge><span class="dot"></span> Offline-ready pass</span>
                 <a href="{{ url_for('home') }}" class="nav-button">
                     <i class="fas fa-home"></i> Home
