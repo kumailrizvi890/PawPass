@@ -97,6 +97,11 @@ body.colorblind-mode .placeholder-image {
   box-sizing: border-box;
 }
 
+/* Never allow horizontal page overflow: nav and decorative art stay inside the viewport */
+html, body {
+  overflow-x: clip;
+}
+
 body {
   font-family: 'Poppins', sans-serif;
   background-color: var(--background-color);
@@ -223,6 +228,71 @@ nav button, .nav-button {
 
 nav button svg, .nav-button i {
   margin-right: var(--spacing-sm);
+}
+
+/* Mobile navigation toggle (hamburger) — hidden on desktop, shown <=767px */
+.nav-toggle {
+  display: none;
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 10px;
+  margin-left: auto;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border-radius: var(--border-radius);
+}
+
+/* CSS hamburger bars (no icon font needed) */
+.nav-toggle span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: #fff;
+  border-radius: 2px;
+}
+
+@media (max-width: 767px) {
+  header .container {
+    flex-wrap: wrap;
+  }
+
+  .nav-toggle {
+    display: inline-flex;
+  }
+
+  /* Nav collapses into a dropdown panel below the logo row */
+  header nav {
+    display: none;
+    flex-basis: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    padding: 10px 0 2px;
+  }
+
+  header nav.nav-open {
+    display: flex;
+  }
+
+  header nav .nav-button,
+  header nav button {
+    margin-left: 0;
+    padding: 8px 2px;
+    font-size: 0.95rem;
+  }
+
+  header nav .offline-badge {
+    margin: 4px 0 6px;
+  }
+
+  .footer-links {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
 }
 
 /* Main content */
